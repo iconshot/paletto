@@ -1,0 +1,14 @@
+{
+  "name": "paletto",
+  "version": "1.0.0",
+  "description": "Color palette tool.",
+  "main": "index.js",
+  "keywords": [
+    "color",
+    "palette"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "color-convert": "^2.0.1"
+  }
+}
