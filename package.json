@@ -1,10 +1,10 @@
 {
   "name": "paletto",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Color palette tool.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iconshot/detonator.git"
+    "url": "https://github.com/iconshot/paletto.git"
   },
   "main": "index.js",
   "keywords": [
