@@ -254,20 +254,11 @@ module.exports = [
     "white-space": `${first} ${second}`,
   })),
 
-  // break words
-
-  new Rule("break-normal", {
-    "overflow-wrap": "normal",
-    "word-break": "normal",
-  }),
-
-  new Rule("break-words", { "overflow-wrap": "break-words" }),
-
-  new Rule("break-all", { "word-break": "break-all" }),
-
-  new Rule("break-keep", { "word-break": "keep-all" }),
+  // overflow wrap
 
   new Rule("overflow-wrap-{value}", (value) => ({ "overflow-wrap": value })),
+
+  // word break
 
   new Rule("word-break-{value}", (value) => ({ "word-break": value })),
 
