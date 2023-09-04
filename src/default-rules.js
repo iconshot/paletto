@@ -279,7 +279,7 @@ module.exports = [
 
   new Rule("content-{value}", (value) => ({ content: value })),
 
-  // textshadow
+  // text shadow
 
   new Rule("text-shadow-{first}", (first) => ({ "text-shadow": first })),
 
@@ -1607,37 +1607,37 @@ module.exports = [
 
   // box shadow
 
-  new Rule("shadow-{first}", (first) => ({ "box-shadow": first })),
+  new Rule("box-shadow-{first}", (first) => ({ "box-shadow": first })),
 
-  new Rule("shadow-{first}-{second}", (first, second) => ({
+  new Rule("box-shadow-{first}-{second}", (first, second) => ({
     "box-shadow": `${Value.parse(first)} ${Value.parse(
       second
-    )} var(--paletto-shadow-color)`,
+    )} var(--paletto-box-shadow-color)`,
   })),
 
-  new Rule("shadow-{first}-{second}-{third}", (first, second, third) => ({
+  new Rule("box-shadow-{first}-{second}-{third}", (first, second, third) => ({
     "box-shadow": `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
       third
-    )} var(--paletto-shadow-color)`,
+    )} var(--paletto-box-shadow-color)`,
   })),
 
   new Rule(
-    "shadow-{first}-{second}-{third}-{fourth}",
+    "box-shadow-{first}-{second}-{third}-{fourth}",
     (first, second, third, fourth) => ({
       "box-shadow": `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
         third
-      )} ${Value.parse(fourth)} var(--paletto-shadow-color)`,
+      )} ${Value.parse(fourth)} var(--paletto-box-shadow-color)`,
     })
   ),
 
   new Rule(
-    "shadow-{first}-{second}-{third}-{fourth}-{fifth}",
+    "box-shadow-{first}-{second}-{third}-{fourth}-{fifth}",
     (first, second, third, fourth, fifth) => ({
       "box-shadow": `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
         third
       )} ${Value.parse(fourth)} ${Value.parse(
         fifth
-      )} var(--paletto-shadow-color)`,
+      )} var(--paletto-box-shadow-color)`,
     })
   ),
 

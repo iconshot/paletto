@@ -118,7 +118,7 @@ class Bundler {
       ["accent-color", "accent-color"],
       ["bg-gradient-from-color", "--paletto-gradient-from-color"],
       ["bg-gradient-to-color", "--paletto-gradient-to-color"],
-      ["shadow-color", "--paletto-shadow-color"],
+      ["box-shadow-color", "--paletto-box-shadow-color"],
       ["text-shadow-color", "--paletto-text-shadow-color"],
       ["drop-shadow-color", "--paletto-drop-shadow-color"],
       ["backdrop-drop-shadow-color", "--paletto-backdrop-drop-shadow-color"],

@@ -1,7 +1,7 @@
 {
   "name": "paletto",
-  "version": "2.0.1",
-  "description": "Generate CSS with JavaScript.",
+  "version": "2.0.2",
+  "description": "On-demand CSS framework.",
   "repository": {
     "type": "git",
     "url": "https://github.com/iconshot/paletto.git"
