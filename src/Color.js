@@ -1,28 +1,31 @@
 const ColorConvert = require("color-convert");
 
-class Paletto {
-  // generate shades from v to 0
+class Color {
+  constructor(hue, saturation) {
+    this.hue = hue;
+    this.saturation = saturation;
+  }
 
-  static shades(h, s, v, steps = 10) {
-    const arr = [];
+  getHue() {
+    return this.hue;
+  }
 
-    let value = v;
+  getSaturation() {
+    return this.saturation;
+  }
 
-    while (value >= 0) {
-      const hex = ColorConvert.hsv.hex([h, s, value]);
+  rgb(value) {
+    return ColorConvert.hsv.rgb(this.hue, this.saturation, value);
+  }
 
-      arr.push(`#${hex}`);
-
-      value -= steps;
-    }
-
-    return arr;
+  hex(value) {
+    return ColorConvert.hsv.hex(this.hue, this.saturation, value);
   }
 }
 
 // source: http://www.procato.com/rgb+index/
 
-Paletto.hues = {
+Color.hues = {
   red: 0,
   scarlet: 7.5,
   vermilion: 15,
@@ -73,4 +76,4 @@ Paletto.hues = {
   amaranth: 352.5,
 };
 
-module.exports = Paletto;
+module.exports = Color;
