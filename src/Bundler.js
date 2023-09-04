@@ -25,7 +25,7 @@ class Bundler {
       src: ["./src"],
       file: "./src/output.css",
       extensions: ["js", "html"],
-      colors: { white: new Color(0, 0) },
+      colors: { blank: new Color(0, 0) },
       rules: [...defaultRules],
       elements: [
         new Element(
