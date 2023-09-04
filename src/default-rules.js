@@ -246,11 +246,11 @@ module.exports = [
     "vertical-align": Value.parse(value),
   })),
 
-  // whitespace
+  // white space
 
-  new Rule("whitespace-{first}", (first) => ({ "white-space": first })),
+  new Rule("white-space-{first}", (first) => ({ "white-space": first })),
 
-  new Rule("whitespace-{first}-{second}", (first, second) => ({
+  new Rule("white-space-{first}-{second}", (first, second) => ({
     "white-space": `${first} ${second}`,
   })),
 
