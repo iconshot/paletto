@@ -4,6 +4,7 @@ const fsp = require("fs/promises");
 
 const Animation = require("./Animation");
 const Breakpoint = require("./Breakpoint");
+const Color = require("./Color");
 const Element = require("./Element");
 const Rule = require("./Rule");
 const Target = require("./Target");
@@ -24,7 +25,7 @@ class Bundler {
       src: ["./src"],
       file: "./src/output.css",
       extensions: ["js", "html"],
-      colors: {},
+      colors: { white: new Color(0, 0) },
       rules: [...defaultRules],
       elements: [
         new Element(
