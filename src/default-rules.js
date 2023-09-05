@@ -1882,21 +1882,19 @@ module.exports = [
     })
   ),
 
-  // animations
+  // animate
 
-  new Rule("animation-none", { animation: "none" }),
+  new Rule("animate-spin", { animation: "spin 1s linear infinite" }),
 
-  new Rule("animation-spin", { animation: "spin 1s linear infinite" }),
-
-  new Rule("animation-ping", {
+  new Rule("animate-ping", {
     animation: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
   }),
 
-  new Rule("animation-pulse", {
+  new Rule("animate-pulse", {
     animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
   }),
 
-  new Rule("animation-bounce", { animation: "bounce 1s infinite" }),
+  new Rule("animate-bounce", { animation: "bounce 1s infinite" }),
 
   // animation delay
 
