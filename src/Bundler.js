@@ -348,9 +348,17 @@ class Bundler {
           (tmpTarget) => tmpTarget.getSelector() === currentTarget.getSelector()
         );
 
-        const properties = allTargets.reduce((properties, tmpTarget) => {
-          return { ...properties, ...tmpTarget.getProperties() };
-        }, {});
+        const properties = allTargets.reduce(
+          (properties, tmpTarget) => ({
+            ...properties,
+            ...tmpTarget.getProperties(),
+          }),
+          {}
+        );
+
+        if (Object.keys(properties).length === 0) {
+          continue;
+        }
 
         const target = new Target(selector, properties);
 
@@ -370,9 +378,17 @@ class Bundler {
               tmpTarget.getSelector() === currentTarget.getSelector()
           );
 
-          const properties = allTargets.reduce((properties, tmpTarget) => {
-            return { ...properties, ...tmpTarget.getProperties() };
-          }, {});
+          const properties = allTargets.reduce(
+            (properties, tmpTarget) => ({
+              ...properties,
+              ...tmpTarget.getProperties(),
+            }),
+            {}
+          );
+
+          if (Object.keys(properties).length === 0) {
+            continue;
+          }
 
           const target = new Target(selector, properties);
 
