@@ -28,10 +28,10 @@ class Bundler {
       colors: { blank: new Color(0, 0) },
       rules: [...defaultRules],
       elements: [
-        new Element(
-          ".container",
-          "w-1536px xxl:w-1280px xl:w-1024px lg:w-768px md:w-640px sm:w-100%"
-        ),
+        new Element(".container", {
+          "@apply":
+            "w-1536px xxl:w-1280px xl:w-1024px lg:w-768px md:w-640px sm:w-100%",
+        }),
       ],
       animations: {
         spin: new Animation({
@@ -264,10 +264,10 @@ class Bundler {
 
     for (const element of elements) {
       const tmpSelector = element.getSelector();
-      const tmpClasses = element.getClasses();
+      const tmpApply = element.getApply();
       const tmpProperties = element.getProperties();
 
-      if (tmpClasses === null) {
+      if (tmpApply === null) {
         const target = new Target(tmpSelector, tmpProperties);
 
         this.targets.push(target);
@@ -282,9 +282,7 @@ class Bundler {
         tmpBreakpointTargets[key] = [];
       }
 
-      const matches = tmpClasses
-        .split(" ")
-        .filter((tmpClass) => tmpClass !== "");
+      const matches = tmpApply.split(" ").filter((tmpClass) => tmpClass !== "");
 
       for (const match of matches) {
         const split = this.split(match);
@@ -330,11 +328,9 @@ class Bundler {
         }
       }
 
-      if (tmpProperties !== null) {
-        const target = new Target(tmpSelector, tmpProperties);
+      const target = new Target(tmpSelector, tmpProperties);
 
-        tmpTargets.push(target);
-      }
+      tmpTargets.push(target);
 
       const unique = (targets) => {
         return targets.filter(
