@@ -4,20 +4,26 @@ class Rule {
     this.extractor = extractor;
   }
 
-  parse(string) {
-    const args = this.match(string);
+  keys() {
+    const matches = this.matcher.matchAll(/\{([^\}]+)\}/g);
 
-    if (args === null) {
+    return [...matches].map((match) => match[1]);
+  }
+
+  parse(string) {
+    const params = this.match(string);
+
+    if (params === null) {
       return null;
     }
 
-    const properties = this.extract(...args);
+    const properties = this.extract(params);
 
     return properties;
   }
 
   match(string) {
-    // convert hello-{world} to a regex expecting a "world" param
+    // convert utility-{value} to a regex expecting a "value" param
 
     const matcher = this.matcher.replace(
       /\{([^\}]+)\}/g,
@@ -32,15 +38,27 @@ class Rule {
       return null;
     }
 
-    const args = matches.slice(1).filter((match) => match !== undefined);
+    const keys = this.keys();
 
-    return args;
+    const values = matches.slice(1).filter((match) => match !== undefined);
+
+    const params = {};
+
+    let i = 0;
+
+    for (const key of keys) {
+      params[key] = values[i];
+
+      i++;
+    }
+
+    return params;
   }
 
-  extract(...args) {
+  extract(params) {
     const properties =
       typeof this.extractor === "function"
-        ? this.extractor(...args)
+        ? this.extractor(params)
         : this.extractor;
 
     return properties;

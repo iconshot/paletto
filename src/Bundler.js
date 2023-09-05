@@ -140,10 +140,12 @@ class Bundler {
         return object;
       };
 
-      rules.unshift(new Rule(`${key}-{first}`, (first) => createObject(first)));
+      rules.unshift(
+        new Rule(`${key}-{first}`, ({ first }) => createObject(first))
+      );
 
       rules.unshift(
-        new Rule(`${key}-{first}-{second}`, (first, second) => {
+        new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
           if (!(first in colors)) {
             return null;
           }
@@ -163,23 +165,26 @@ class Bundler {
       );
 
       rules.unshift(
-        new Rule(`${key}-{first}-{second}-{third}`, (first, second, third) => {
-          if (!(first in colors)) {
-            return null;
+        new Rule(
+          `${key}-{first}-{second}-{third}`,
+          ({ first, second, third }) => {
+            if (!(first in colors)) {
+              return null;
+            }
+
+            if (isNaN(second)) {
+              return null;
+            }
+
+            const value = parseInt(second);
+
+            const color = colors[first];
+
+            const [r, g, b] = color.rgb(value);
+
+            return createObject(`rgb(${r} ${g} ${b} / ${third})`);
           }
-
-          if (isNaN(second)) {
-            return null;
-          }
-
-          const value = parseInt(second);
-
-          const color = colors[first];
-
-          const [r, g, b] = color.rgb(value);
-
-          return createObject(`rgb(${r} ${g} ${b} / ${third})`);
-        })
+        )
       );
     });
   }
