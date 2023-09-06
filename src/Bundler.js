@@ -512,7 +512,7 @@ class Bundler {
 
   // recursively scan directory in search of potential classes
 
-  async scan(src, matches) {
+  async scan(src, matches, isChild = false) {
     const { extensions } = this.config;
 
     const stat = await fsp.stat(src);
@@ -523,13 +523,17 @@ class Bundler {
       for (const file of files) {
         const tmpFile = path.resolve(src, file);
 
-        await this.scan(tmpFile, matches);
+        await this.scan(tmpFile, matches, true);
       }
     } else {
-      const endsWith = extensions.some((extension) => src.endsWith(extension));
+      if (isChild) {
+        const endsWith = extensions.some((extension) =>
+          src.endsWith(extension)
+        );
 
-      if (!endsWith) {
-        return;
+        if (!endsWith) {
+          return;
+        }
       }
 
       const content = await fsp.readFile(src, { encoding: "utf-8" });
