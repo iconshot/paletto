@@ -1,19 +1,17 @@
 const Animation = require("./src/Animation");
 const Breakpoint = require("./src/Breakpoint");
 const Color = require("./src/Color");
-const Component = require("./src/Component");
-const Element = require("./src/Element");
 const PseudoClass = require("./src/PseudoClass");
-const Utility = require("./src/Utility");
+const Rule = require("./src/Rule");
+const Target = require("./src/Target");
 const Value = require("./src/Value");
 
 module.exports = {
   Animation,
   Breakpoint,
   Color,
-  Component,
-  Element,
   PseudoClass,
-  Utility,
+  Rule,
+  Target,
   Value,
 };

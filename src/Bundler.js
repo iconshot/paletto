@@ -5,9 +5,7 @@ const fsp = require("fs/promises");
 const Animation = require("./Animation");
 const Breakpoint = require("./Breakpoint");
 const Color = require("./Color");
-const Component = require("./Component");
-const Element = require("./Element");
-const Utility = require("./Utility");
+const Rule = require("./Rule");
 const Target = require("./Target");
 
 const defaultUtilities = require("./default-utilities");
@@ -31,7 +29,7 @@ class Bundler {
       colors: { blank: new Color(0, 0) },
       elements: [],
       components: [
-        new Component("container", {
+        new Rule("container", {
           "@apply":
             "w-1536px xxl:w-1280px xl:w-1024px lg:w-768px md:w-640px sm:w-100%",
         }),
@@ -149,11 +147,11 @@ class Bundler {
       };
 
       utilities.unshift(
-        new Utility(`${key}-{first}`, ({ first }) => createObject(first))
+        new Rule(`${key}-{first}`, ({ first }) => createObject(first))
       );
 
       utilities.unshift(
-        new Utility(`${key}-{first}-{second}`, ({ first, second }) => {
+        new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
           if (!(first in colors)) {
             return null;
           }
@@ -173,7 +171,7 @@ class Bundler {
       );
 
       utilities.unshift(
-        new Utility(
+        new Rule(
           `${key}-{first}-{second}-{third}`,
           ({ first, second, third }) => {
             if (!(first in colors)) {
@@ -221,7 +219,7 @@ class Bundler {
     await this.write();
   }
 
-  split(match) {
+  splitModifiers(match) {
     const { breakpoints } = this.config;
 
     const split = match.split(":");
@@ -278,10 +276,15 @@ class Bundler {
 
     for (const element of this.elements) {
       const tmpSelector = element.getSelector();
-      const tmpApply = element.getApply();
-      const tmpProperties = element.getProperties();
+
+      const { "@apply": tmpApply = null, ...tmpProperties } =
+        element.getProperties();
 
       if (tmpApply === null) {
+        if (Object.keys(tmpProperties).length === 0) {
+          continue;
+        }
+
         const target = new Target(tmpSelector, tmpProperties);
 
         this.targets.push(target);
@@ -296,18 +299,16 @@ class Bundler {
         tmpBreakpointTargets[key] = [];
       }
 
-      const matches = tmpApply
-        .split(" ")
-        .filter((tmpClass) => tmpClass.length > 0);
+      const matches = tmpApply.split(" ").filter((match) => match.length > 0);
 
       for (const match of matches) {
-        const split = this.split(match);
+        const modifiers = this.splitModifiers(match);
 
-        if (split === null) {
+        if (modifiers === null) {
           continue;
         }
 
-        const [tmpClass, tmpPseudoClass, tmpBreakpointName] = split;
+        const [tmpClass, tmpPseudoClass, tmpBreakpointName] = modifiers;
 
         for (const utility of utilities) {
           const properties = utility.parse(tmpClass);
@@ -437,9 +438,11 @@ class Bundler {
 
         const selector = `.${match}`;
 
-        const element = new Element(selector, properties);
+        const element = new Target(selector, properties);
 
         this.elements.push(element);
+
+        break;
       }
     }
   }
@@ -450,22 +453,28 @@ class Bundler {
     for (const match of matches) {
       // ignore invalid matches
 
-      const split = this.split(match);
+      const modifiers = this.splitModifiers(match);
 
-      if (split === null) {
+      if (modifiers === null) {
         continue;
       }
 
-      const [tmpClass, tmpPseudoClass, tmpBreakpointName] = split;
+      const [tmpClass, tmpPseudoClass, tmpBreakpointName] = modifiers;
 
       const tmpBreakpoint =
         tmpBreakpointName !== null ? breakpoints[tmpBreakpointName] : null;
 
       for (const utility of utilities) {
-        const properties = utility.parse(tmpClass);
+        const tmpProperties = utility.parse(tmpClass);
 
-        if (properties === null) {
+        if (tmpProperties === null) {
           continue;
+        }
+
+        const { "@apply": apply = null, ...properties } = tmpProperties;
+
+        if (Object.keys(properties).length === 0) {
+          break;
         }
 
         let selector = tmpClass

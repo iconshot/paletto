@@ -1,4 +1,4 @@
-class Utility {
+class Rule {
   constructor(matcher, extractor) {
     this.matcher = matcher;
     this.extractor = extractor;
@@ -23,7 +23,7 @@ class Utility {
   }
 
   match(string) {
-    // convert utility-{value} to a regex expecting a "value" param
+    // convert rule-{value} to a regex expecting a "value" param
 
     const matcher = this.matcher.replace(
       /\{([^\}]+)\}/g,
@@ -65,4 +65,4 @@ class Utility {
   }
 }
 
-module.exports = Utility;
+module.exports = Rule;
