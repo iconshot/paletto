@@ -5,19 +5,21 @@ const fsp = require("fs/promises");
 const Animation = require("./Animation");
 const Breakpoint = require("./Breakpoint");
 const Color = require("./Color");
+const Component = require("./Component");
 const Element = require("./Element");
-const Rule = require("./Rule");
+const Utility = require("./Utility");
 const Target = require("./Target");
 
-const defaultRules = require("./default-rules");
+const defaultUtilities = require("./default-utilities");
 
 class Bundler {
   constructor(config) {
     this.config = this.extend(config);
 
+    this.elements = [];
     this.targets = [];
 
-    this.addColorRules();
+    this.addColorUtilities();
   }
 
   extend(config) {
@@ -25,14 +27,16 @@ class Bundler {
       src: ["./src"],
       file: "./src/output.css",
       extensions: ["js", "html"],
+      addColorUtilies: true,
       colors: { blank: new Color(0, 0) },
-      rules: [...defaultRules],
-      elements: [
-        new Element(".container", {
+      elements: [],
+      components: [
+        new Component("container", {
           "@apply":
             "w-1536px xxl:w-1280px xl:w-1024px lg:w-768px md:w-640px sm:w-100%",
         }),
       ],
+      utilities: [...defaultUtilities],
       animations: {
         spin: new Animation({
           from: { transform: "rotate(0deg)" },
@@ -92,10 +96,14 @@ class Bundler {
     return tmpConfig;
   }
 
-  // color rules are added before the other rules so they have priority
+  // color utilities are added before the other utilities so they have priority
 
-  addColorRules() {
-    const { rules, colors } = this.config;
+  addColorUtilities() {
+    const { addColorUtilies, utilities, colors } = this.config;
+
+    if (!addColorUtilies) {
+      return;
+    }
 
     [
       ["color", "color"],
@@ -140,12 +148,12 @@ class Bundler {
         return object;
       };
 
-      rules.unshift(
-        new Rule(`${key}-{first}`, ({ first }) => createObject(first))
+      utilities.unshift(
+        new Utility(`${key}-{first}`, ({ first }) => createObject(first))
       );
 
-      rules.unshift(
-        new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
+      utilities.unshift(
+        new Utility(`${key}-{first}-{second}`, ({ first, second }) => {
           if (!(first in colors)) {
             return null;
           }
@@ -164,8 +172,8 @@ class Bundler {
         })
       );
 
-      rules.unshift(
-        new Rule(
+      utilities.unshift(
+        new Utility(
           `${key}-{first}-{second}-{third}`,
           ({ first, second, third }) => {
             if (!(first in colors)) {
@@ -190,9 +198,11 @@ class Bundler {
   }
 
   async bundle() {
-    const { src } = this.config;
+    const { src, elements } = this.config;
 
-    this.fill();
+    this.elements = elements;
+
+    this.convertElements();
 
     const matches = [];
 
@@ -202,7 +212,11 @@ class Bundler {
       await this.scan(tmpPath, matches);
     }
 
-    this.parse(matches);
+    this.parseComponents(matches);
+
+    this.convertElements();
+
+    this.parseUtilities(matches);
 
     await this.write();
   }
@@ -259,10 +273,10 @@ class Bundler {
 
   // create targets from elements
 
-  fill() {
-    const { rules, elements, pseudoClasses, breakpoints } = this.config;
+  convertElements() {
+    const { utilities, pseudoClasses, breakpoints } = this.config;
 
-    for (const element of elements) {
+    for (const element of this.elements) {
       const tmpSelector = element.getSelector();
       const tmpApply = element.getApply();
       const tmpProperties = element.getProperties();
@@ -282,7 +296,9 @@ class Bundler {
         tmpBreakpointTargets[key] = [];
       }
 
-      const matches = tmpApply.split(" ").filter((tmpClass) => tmpClass !== "");
+      const matches = tmpApply
+        .split(" ")
+        .filter((tmpClass) => tmpClass.length > 0);
 
       for (const match of matches) {
         const split = this.split(match);
@@ -293,28 +309,36 @@ class Bundler {
 
         const [tmpClass, tmpPseudoClass, tmpBreakpointName] = split;
 
-        for (const rule of rules) {
-          const properties = rule.parse(tmpClass);
+        for (const utility of utilities) {
+          const properties = utility.parse(tmpClass);
 
           if (properties === null) {
             continue;
           }
 
-          let selector = tmpSelector;
+          const selectors = tmpSelector.match(/(\\.|[^,])+/g);
 
-          if (tmpPseudoClass !== null) {
-            let suffix = null;
+          const tmpSelectors = selectors
+            .map((tmpSelector) => tmpSelector.trim())
+            .map((tmpSelector) => {
+              if (tmpPseudoClass !== null) {
+                let suffix = null;
 
-            if (tmpPseudoClass in pseudoClasses) {
-              const pseudoClass = pseudoClasses[tmpPseudoClass];
+                if (tmpPseudoClass in pseudoClasses) {
+                  const pseudoClass = pseudoClasses[tmpPseudoClass];
 
-              suffix = pseudoClass.getValue();
-            } else {
-              suffix = tmpPseudoClass;
-            }
+                  suffix = pseudoClass.getValue();
+                } else {
+                  suffix = tmpPseudoClass;
+                }
 
-            selector += `:${suffix}`;
-          }
+                tmpSelector += `:${suffix}`;
+              }
+
+              return tmpSelector;
+            });
+
+          const selector = tmpSelectors.join(", ");
 
           const target = new Target(selector, properties);
 
@@ -396,54 +420,36 @@ class Bundler {
         }
       }
     }
+
+    this.elements = [];
   }
 
-  // recursively scan directory in search of potential classes
+  parseComponents(matches) {
+    const { components } = this.config;
 
-  async scan(src, matches) {
-    const { extensions } = this.config;
+    for (const match of matches) {
+      for (const component of components) {
+        const properties = component.parse(match);
 
-    const stat = await fsp.stat(src);
-
-    if (stat.isDirectory()) {
-      const files = await fsp.readdir(src);
-
-      for (const file of files) {
-        const tmpFile = path.resolve(src, file);
-
-        await this.scan(tmpFile, matches);
-      }
-    } else {
-      const endsWith = extensions.some((extension) => src.endsWith(extension));
-
-      if (!endsWith) {
-        return;
-      }
-
-      const content = await fsp.readFile(src, { encoding: "utf-8" });
-
-      const regex = /[^<>"'`\s]*[^<>"'`\s:]/g;
-
-      const result = content.match(regex);
-
-      if (result === null) {
-        return;
-      }
-
-      for (const match of result) {
-        if (!matches.includes(match)) {
-          matches.push(match);
+        if (properties === null) {
+          continue;
         }
+
+        const selector = `.${match}`;
+
+        const element = new Element(selector, properties);
+
+        this.elements.push(element);
       }
     }
   }
 
-  // add target to targets or breakpoint
-
-  parse(matches) {
-    const { rules, pseudoClasses, breakpoints } = this.config;
+  parseUtilities(matches) {
+    const { utilities, pseudoClasses, breakpoints } = this.config;
 
     for (const match of matches) {
+      // ignore invalid matches
+
       const split = this.split(match);
 
       if (split === null) {
@@ -455,8 +461,8 @@ class Bundler {
       const tmpBreakpoint =
         tmpBreakpointName !== null ? breakpoints[tmpBreakpointName] : null;
 
-      for (const rule of rules) {
-        const properties = rule.parse(tmpClass);
+      for (const utility of utilities) {
+        const properties = utility.parse(tmpClass);
 
         if (properties === null) {
           continue;
@@ -502,6 +508,46 @@ class Bundler {
         }
 
         break;
+      }
+    }
+  }
+
+  // recursively scan directory in search of potential classes
+
+  async scan(src, matches) {
+    const { extensions } = this.config;
+
+    const stat = await fsp.stat(src);
+
+    if (stat.isDirectory()) {
+      const files = await fsp.readdir(src);
+
+      for (const file of files) {
+        const tmpFile = path.resolve(src, file);
+
+        await this.scan(tmpFile, matches);
+      }
+    } else {
+      const endsWith = extensions.some((extension) => src.endsWith(extension));
+
+      if (!endsWith) {
+        return;
+      }
+
+      const content = await fsp.readFile(src, { encoding: "utf-8" });
+
+      const regex = /[^<>"'`\s]*[^<>"'`\s:]/g;
+
+      const result = content.match(regex);
+
+      if (result === null) {
+        return;
+      }
+
+      for (const match of result) {
+        if (!matches.includes(match)) {
+          matches.push(match);
+        }
       }
     }
   }

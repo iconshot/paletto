@@ -1,7 +1,7 @@
 {
   "name": "paletto",
-  "version": "2.0.10",
-  "description": "On-demand utility-first CSS framework.",
+  "version": "2.1.0",
+  "description": "On-demand CSS framework.",
   "repository": {
     "type": "git",
     "url": "https://github.com/iconshot/paletto.git"

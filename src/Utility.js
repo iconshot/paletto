@@ -1,4 +1,4 @@
-class Rule {
+class Utility {
   constructor(matcher, extractor) {
     this.matcher = matcher;
     this.extractor = extractor;
@@ -65,4 +65,4 @@ class Rule {
   }
 }
 
-module.exports = Rule;
+module.exports = Utility;
