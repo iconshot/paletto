@@ -92,53 +92,28 @@ class Bundler {
       ["text-shadow-color", "--paletto-text-shadow-color"],
       ["drop-shadow-color", "--paletto-drop-shadow-color"],
       ["backdrop-drop-shadow-color", "--paletto-backdrop-drop-shadow-color"],
-    ].forEach((pair) => {
-      const [key, property] = pair;
+    ]
+      .reverse()
+      .forEach((pair) => {
+        const [key, property] = pair;
 
-      const createObject = (value) => {
-        const object = {};
+        const createObject = (value) => {
+          const object = {};
 
-        if (Array.isArray(property)) {
-          for (const tmpProperty of property) {
-            object[tmpProperty] = value;
-          }
-        } else {
-          object[property] = value;
-        }
-
-        return object;
-      };
-
-      defaultConfig.utilities.unshift(
-        new Rule(`${key}-{first}`, ({ first }) => createObject(first))
-      );
-
-      defaultConfig.utilities.unshift(
-        new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
-          const { colors } = this.config;
-
-          if (!(first in colors)) {
-            return {};
+          if (Array.isArray(property)) {
+            for (const tmpProperty of property) {
+              object[tmpProperty] = value;
+            }
+          } else {
+            object[property] = value;
           }
 
-          if (isNaN(second)) {
-            return {};
-          }
+          return object;
+        };
 
-          const value = parseInt(second);
-
-          const color = colors[first];
-
-          const [r, g, b] = color.rgb(value);
-
-          return createObject(`rgb(${r} ${g} ${b})`);
-        })
-      );
-
-      defaultConfig.utilities.unshift(
-        new Rule(
-          `${key}-{first}-{second}-{third}`,
-          ({ first, second, third }) => {
+        const rules = [
+          new Rule(`${key}-{first}`, ({ first }) => createObject(first)),
+          new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
             const { colors } = this.config;
 
             if (!(first in colors)) {
@@ -155,11 +130,34 @@ class Bundler {
 
             const [r, g, b] = color.rgb(value);
 
-            return createObject(`rgb(${r} ${g} ${b} / ${third})`);
-          }
-        )
-      );
-    });
+            return createObject(`rgb(${r} ${g} ${b})`);
+          }),
+          new Rule(
+            `${key}-{first}-{second}-{third}`,
+            ({ first, second, third }) => {
+              const { colors } = this.config;
+
+              if (!(first in colors)) {
+                return {};
+              }
+
+              if (isNaN(second)) {
+                return {};
+              }
+
+              const value = parseInt(second);
+
+              const color = colors[first];
+
+              const [r, g, b] = color.rgb(value);
+
+              return createObject(`rgb(${r} ${g} ${b} / ${third})`);
+            }
+          ),
+        ];
+
+        defaultConfig.utilities.unshift(...rules);
+      });
 
     const tmpConfig = { ...defaultConfig, ...config };
 
