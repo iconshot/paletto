@@ -16,8 +16,6 @@ class Bundler {
 
     this.elements = [];
     this.targets = [];
-
-    this.addColorUtilities();
   }
 
   extend(config) {
@@ -25,7 +23,6 @@ class Bundler {
       src: ["./src"],
       file: "./src/output.css",
       extensions: ["js", "html"],
-      addColorUtilies: true,
       colors: { blank: new Color(0, 0) },
       elements: [],
       components: [
@@ -69,40 +66,6 @@ class Bundler {
       extend: null,
     };
 
-    const tmpConfig = { ...defaultConfig, ...config };
-
-    const { extend } = tmpConfig;
-
-    if (extend !== null) {
-      for (const key in extend) {
-        const value = extend[key];
-
-        if (value === null) {
-          tmpConfig[key] = value;
-        } else if (Array.isArray(value)) {
-          tmpConfig[key] = [...tmpConfig[key], ...value];
-        } else if (typeof value === "object") {
-          for (const j in value) {
-            tmpConfig[key][j] = value[j];
-          }
-        } else {
-          tmpConfig[key] = value;
-        }
-      }
-    }
-
-    return tmpConfig;
-  }
-
-  // color utilities are added before the other utilities so they have priority
-
-  addColorUtilities() {
-    const { addColorUtilies, utilities, colors } = this.config;
-
-    if (!addColorUtilies) {
-      return;
-    }
-
     [
       ["color", "color"],
       ["bg-color", "background-color"],
@@ -129,7 +92,7 @@ class Bundler {
       ["text-shadow-color", "--paletto-text-shadow-color"],
       ["drop-shadow-color", "--paletto-drop-shadow-color"],
       ["backdrop-drop-shadow-color", "--paletto-backdrop-drop-shadow-color"],
-    ].map((pair) => {
+    ].forEach((pair) => {
       const [key, property] = pair;
 
       const createObject = (value) => {
@@ -146,18 +109,20 @@ class Bundler {
         return object;
       };
 
-      utilities.unshift(
+      defaultConfig.utilities.unshift(
         new Rule(`${key}-{first}`, ({ first }) => createObject(first))
       );
 
-      utilities.unshift(
+      defaultConfig.utilities.unshift(
         new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
+          const { colors } = this.config;
+
           if (!(first in colors)) {
-            return null;
+            return {};
           }
 
           if (isNaN(second)) {
-            return null;
+            return {};
           }
 
           const value = parseInt(second);
@@ -170,16 +135,18 @@ class Bundler {
         })
       );
 
-      utilities.unshift(
+      defaultConfig.utilities.unshift(
         new Rule(
           `${key}-{first}-{second}-{third}`,
           ({ first, second, third }) => {
+            const { colors } = this.config;
+
             if (!(first in colors)) {
-              return null;
+              return {};
             }
 
             if (isNaN(second)) {
-              return null;
+              return {};
             }
 
             const value = parseInt(second);
@@ -193,6 +160,30 @@ class Bundler {
         )
       );
     });
+
+    const tmpConfig = { ...defaultConfig, ...config };
+
+    const { extend } = tmpConfig;
+
+    if (extend !== null) {
+      for (const key in extend) {
+        const value = extend[key];
+
+        if (value === null) {
+          tmpConfig[key] = value;
+        } else if (Array.isArray(value)) {
+          tmpConfig[key] = [...tmpConfig[key], ...value];
+        } else if (typeof value === "object") {
+          for (const j in value) {
+            tmpConfig[key][j] = value[j];
+          }
+        } else {
+          tmpConfig[key] = value;
+        }
+      }
+    }
+
+    return tmpConfig;
   }
 
   async bundle() {
