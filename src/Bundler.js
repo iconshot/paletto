@@ -211,11 +211,21 @@ class Bundler {
   splitModifiers(match) {
     const { breakpoints } = this.config;
 
-    const split = match.split(":");
+    let tmpMatch = null;
 
     let className = null;
     let pseudoClass = null;
     let breakpoint = null;
+    let important = false;
+
+    if (match.startsWith("!")) {
+      important = true;
+      tmpMatch = match.slice(1);
+    } else {
+      tmpMatch = match;
+    }
+
+    const split = tmpMatch.split(":");
 
     switch (split.length) {
       case 1: {
@@ -255,7 +265,7 @@ class Bundler {
       }
     }
 
-    return [className, pseudoClass, breakpoint];
+    return [className, pseudoClass, breakpoint, important];
   }
 
   // create targets from elements
@@ -297,14 +307,17 @@ class Bundler {
           continue;
         }
 
-        const [tmpClass, tmpPseudoClass, tmpBreakpointName] = modifiers;
+        const [tmpClass, tmpPseudoClass, tmpBreakpointName, tmpImportant] =
+          modifiers;
 
         for (const utility of utilities) {
-          const properties = utility.parse(tmpClass);
+          const tmpProperties = utility.parse(tmpClass);
 
-          if (properties === null) {
+          if (tmpProperties === null) {
             continue;
           }
+
+          const properties = { ...tmpProperties };
 
           const selectors = tmpSelector.match(/(\\.|[^,])+/g);
 
@@ -329,6 +342,12 @@ class Bundler {
             });
 
           const selector = tmpSelectors.join(", ");
+
+          if (tmpImportant) {
+            for (const key in properties) {
+              properties[key] = `${properties[key]}!important`;
+            }
+          }
 
           const target = new Target(selector, properties);
 
@@ -448,7 +467,8 @@ class Bundler {
         continue;
       }
 
-      const [tmpClass, tmpPseudoClass, tmpBreakpointName] = modifiers;
+      const [tmpClass, tmpPseudoClass, tmpBreakpointName, tmpImportant] =
+        modifiers;
 
       const tmpBreakpoint =
         tmpBreakpointName !== null ? breakpoints[tmpBreakpointName] : null;
@@ -495,7 +515,17 @@ class Bundler {
           selector = `${tmpBreakpointName}\\:${selector}`;
         }
 
+        if (tmpImportant) {
+          selector = `\\!${selector}`;
+        }
+
         selector = `.${selector}`;
+
+        if (tmpImportant) {
+          for (const key in properties) {
+            properties[key] = `${properties[key]}!important`;
+          }
+        }
 
         const target = new Target(selector, properties);
 
