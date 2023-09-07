@@ -362,6 +362,8 @@ module.exports = [
 
   // display
 
+  new Rule("hidden", { display: "none" }),
+
   ...[
     "block",
     "inline",
@@ -383,7 +385,6 @@ module.exports = [
     "inline-grid",
     "contents",
     "list-item",
-    "none",
   ].map((value) => new Rule(value, { display: value })),
 
   new Rule("display-{first}", ({ first }) => ({ display: first })),
