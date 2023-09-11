@@ -2,13 +2,9 @@ const path = require("path");
 
 const fsp = require("fs/promises");
 
-const Animation = require("./Animation");
-const Breakpoint = require("./Breakpoint");
-const Color = require("./Color");
-const Rule = require("./Rule");
 const Target = require("./Target");
 
-const defaultUtilities = require("./default-utilities");
+const defaultConfig = require("./default-config");
 
 class Bundler {
   constructor(config) {
@@ -18,148 +14,12 @@ class Bundler {
     this.targets = [];
   }
 
+  getConfig() {
+    return this.config;
+  }
+
   extend(config) {
-    const defaultConfig = {
-      src: ["./src"],
-      file: "./src/output.css",
-      extensions: ["js", "html"],
-      colors: { blank: new Color(0, 0) },
-      elements: [],
-      components: [
-        new Rule("container", {
-          "@apply":
-            "w-1536px xxl:w-1280px xl:w-1024px lg:w-768px md:w-640px sm:w-100%",
-        }),
-      ],
-      utilities: [...defaultUtilities],
-      animations: {
-        spin: new Animation({
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
-        }),
-        ping: new Animation({
-          "75%, 100%": { transform: "scale(2)", opacity: 0 },
-        }),
-        pulse: new Animation({
-          "0%, 100%": { opacity: 1 },
-          "50%": { opacity: 0.5 },
-        }),
-        bounce: new Animation({
-          "0%, 100%": {
-            transform: "translateY(-25%)",
-            "animation-timing-function": "cubic-bezier(0.8, 0, 1, 1)",
-          },
-          "50%": {
-            transform: "translateY(0)",
-            "animation-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
-          },
-        }),
-      },
-      pseudoClasses: {},
-      breakpoints: {
-        xxl: new Breakpoint("(max-width: 1536px)"),
-        xl: new Breakpoint("(max-width: 1280px)"),
-        lg: new Breakpoint("(max-width: 1024px)"),
-        md: new Breakpoint("(max-width: 768px)"),
-        sm: new Breakpoint("(max-width: 640px)"),
-      },
-      extend: null,
-    };
-
-    [
-      ["color", "color"],
-      ["bg-color", "background-color"],
-      ["border-inline-s-color", "border-inline-start-color"],
-      ["border-inline-e-color", "border-inline-end-color"],
-      ["border-inline-color", "border-inline-color"],
-      ["border-block-s-color", "border-block-start-color"],
-      ["border-block-e-color", "border-block-end-color"],
-      ["border-block-color", "border-block-color"],
-      ["border-x-color", ["border-left-color", "border-right-color"]],
-      ["border-y-color", ["border-top-color", "border-bottom-color"]],
-      ["border-t-color", "border-top-color"],
-      ["border-b-color", "border-bottom-color"],
-      ["border-r-color", "border-right-color"],
-      ["border-l-color", "border-left-color"],
-      ["border-color", "border-color"],
-      ["outline-color", "outline-color"],
-      ["text-decoration-color", "text-decoration-color"],
-      ["caret-color", "caret-color"],
-      ["accent-color", "accent-color"],
-      ["bg-gradient-from-color", "--paletto-gradient-from-color"],
-      ["bg-gradient-to-color", "--paletto-gradient-to-color"],
-      ["box-shadow-color", "--paletto-box-shadow-color"],
-      ["text-shadow-color", "--paletto-text-shadow-color"],
-      ["drop-shadow-color", "--paletto-drop-shadow-color"],
-      ["backdrop-drop-shadow-color", "--paletto-backdrop-drop-shadow-color"],
-    ]
-      .reverse()
-      .forEach((pair) => {
-        const [key, property] = pair;
-
-        const createObject = (value) => {
-          const object = {};
-
-          if (Array.isArray(property)) {
-            for (const tmpProperty of property) {
-              object[tmpProperty] = value;
-            }
-          } else {
-            object[property] = value;
-          }
-
-          return object;
-        };
-
-        const rules = [
-          new Rule(`${key}-{first}`, ({ first }) => createObject(first)),
-          new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
-            const { colors } = this.config;
-
-            if (!(first in colors)) {
-              return {};
-            }
-
-            if (isNaN(second)) {
-              return {};
-            }
-
-            const value = parseInt(second);
-
-            const color = colors[first];
-
-            const [r, g, b] = color.rgb(value);
-
-            return createObject(`rgb(${r} ${g} ${b})`);
-          }),
-          new Rule(
-            `${key}-{first}-{second}-{third}`,
-            ({ first, second, third }) => {
-              const { colors } = this.config;
-
-              if (!(first in colors)) {
-                return {};
-              }
-
-              if (isNaN(second)) {
-                return {};
-              }
-
-              const value = parseInt(second);
-
-              const color = colors[first];
-
-              const [r, g, b] = color.rgb(value);
-
-              return createObject(`rgb(${r} ${g} ${b} / ${third})`);
-            }
-          ),
-        ];
-
-        defaultConfig.utilities.unshift(...rules);
-      });
-
-    const tmpConfig = { ...defaultConfig, ...config };
+    const tmpConfig = { ...defaultConfig(this), ...config };
 
     const { extend } = tmpConfig;
 
@@ -208,26 +68,34 @@ class Bundler {
     await this.write();
   }
 
-  splitModifiers(match) {
+  splitModifiers(string) {
     const { breakpoints } = this.config;
 
-    let tmpMatch = null;
+    const preffixRegex = /^([^a-z0-9\[\]])?(.+)/;
 
-    let className = null;
-    let pseudoClass = null;
-    let breakpoint = null;
-    let important = false;
+    const match = string.match(preffixRegex);
 
-    if (match.startsWith("!")) {
-      important = true;
-      tmpMatch = match.slice(1);
-    } else {
-      tmpMatch = match;
+    if (match === null) {
+      return null;
     }
 
-    const split = tmpMatch.split(":");
+    const [preffix = null, tmpString] = match.slice(1);
+
+    const splitRegex = /(?<!\[[^\[\]]*):/;
+
+    let className = null;
+    let pseudoClasses = [];
+    let breakpoint = null;
+
+    const split = tmpString.split(splitRegex);
 
     switch (split.length) {
+      case 0: {
+        return null;
+
+        break;
+      }
+
       case 1: {
         className = split[0];
 
@@ -238,7 +106,7 @@ class Bundler {
         if (split[0] in breakpoints) {
           breakpoint = split[0];
         } else {
-          pseudoClass = split[0];
+          pseudoClasses = [split[0]];
         }
 
         className = split[1];
@@ -246,32 +114,27 @@ class Bundler {
         break;
       }
 
-      case 3: {
-        if (!(split[0] in breakpoints)) {
-          return null;
+      default: {
+        if (split[0] in breakpoints) {
+          breakpoint = split[0];
+          pseudoClasses = split.slice(1, -1);
+        } else {
+          pseudoClasses = split.slice(0, -1);
         }
 
-        breakpoint = split[0];
-        pseudoClass = split[1];
-        className = split[2];
-
-        break;
-      }
-
-      default: {
-        return null;
+        className = split[split.length - 1];
 
         break;
       }
     }
 
-    return [className, pseudoClass, breakpoint, important];
+    return [preffix, breakpoint, pseudoClasses, className];
   }
 
   // create targets from elements
 
   convertElements() {
-    const { utilities, pseudoClasses, breakpoints } = this.config;
+    const { utilities, breakpoints } = this.config;
 
     for (const element of this.elements) {
       const tmpSelector = element.getSelector();
@@ -307,8 +170,12 @@ class Bundler {
           continue;
         }
 
-        const [tmpClass, tmpPseudoClass, tmpBreakpointName, tmpImportant] =
+        const [tmpPreffix, tmpBreakpointName, tmpPseudoClasses, tmpClass] =
           modifiers;
+
+        if (tmpPreffix !== null && tmpPreffix !== "!") {
+          continue;
+        }
 
         for (const utility of utilities) {
           const tmpProperties = utility.parse(tmpClass);
@@ -322,28 +189,12 @@ class Bundler {
           const selectors = tmpSelector.match(/(\\.|[^,])+/g);
 
           const tmpSelectors = selectors
-            .map((tmpSelector) => tmpSelector.trim())
-            .map((tmpSelector) => {
-              if (tmpPseudoClass !== null) {
-                let suffix = null;
-
-                if (tmpPseudoClass in pseudoClasses) {
-                  const pseudoClass = pseudoClasses[tmpPseudoClass];
-
-                  suffix = pseudoClass.getValue();
-                } else {
-                  suffix = tmpPseudoClass;
-                }
-
-                tmpSelector += `:${suffix}`;
-              }
-
-              return tmpSelector;
-            });
+            .map((selector) => selector.trim())
+            .map((selector) => this.parseSelector(selector, tmpPseudoClasses));
 
           const selector = tmpSelectors.join(", ");
 
-          if (tmpImportant) {
+          if (tmpPreffix === "!") {
             for (const key in properties) {
               properties[key] = `${properties[key]}!important`;
             }
@@ -456,7 +307,7 @@ class Bundler {
   }
 
   parseUtilities(matches) {
-    const { utilities, pseudoClasses, breakpoints } = this.config;
+    const { utilities, breakpoints } = this.config;
 
     for (const match of matches) {
       // ignore invalid matches
@@ -467,8 +318,12 @@ class Bundler {
         continue;
       }
 
-      const [tmpClass, tmpPseudoClass, tmpBreakpointName, tmpImportant] =
+      const [tmpPreffix, tmpBreakpointName, tmpPseudoClasses, tmpClass] =
         modifiers;
+
+      if (tmpPreffix !== null && tmpPreffix !== "!") {
+        continue;
+      }
 
       const tmpBreakpoint =
         tmpBreakpointName !== null ? breakpoints[tmpBreakpointName] : null;
@@ -486,42 +341,11 @@ class Bundler {
           break;
         }
 
-        let selector = tmpClass
-          .replaceAll("/", "\\/")
-          .replaceAll(".", "\\.")
-          .replaceAll("%", "\\%")
-          .replaceAll(",", "\\,")
-          .replaceAll("#", "\\#")
-          .replaceAll("[", "\\[")
-          .replaceAll("]", "\\]");
+        let selector = `.${this.escapeClass(match)}`;
 
-        if (tmpPseudoClass !== null) {
-          selector = `${tmpPseudoClass}\\:${selector}`;
+        selector = this.parseSelector(selector, tmpPseudoClasses);
 
-          let suffix = null;
-
-          if (tmpPseudoClass in pseudoClasses) {
-            const pseudoClass = pseudoClasses[tmpPseudoClass];
-
-            suffix = pseudoClass.getValue();
-          } else {
-            suffix = tmpPseudoClass;
-          }
-
-          selector += `:${suffix}`;
-        }
-
-        if (tmpBreakpoint !== null) {
-          selector = `${tmpBreakpointName}\\:${selector}`;
-        }
-
-        if (tmpImportant) {
-          selector = `\\!${selector}`;
-        }
-
-        selector = `.${selector}`;
-
-        if (tmpImportant) {
+        if (tmpPreffix === "!") {
           for (const key in properties) {
             properties[key] = `${properties[key]}!important`;
           }
@@ -538,6 +362,61 @@ class Bundler {
         break;
       }
     }
+  }
+
+  escapeClass(className) {
+    return className.replace(/([^a-z0-9-_])/g, "\\$1");
+  }
+
+  parseSelector(selector, tmpPseudoClasses) {
+    const { pseudoClasses } = this.config;
+
+    for (const tmpPseudoClass of tmpPseudoClasses) {
+      const hasBrackets = tmpPseudoClass.match(/^\[.+\]$/);
+
+      if (hasBrackets !== null) {
+        const innerMatch = tmpPseudoClass.slice(1, -1);
+
+        if (innerMatch.startsWith("::")) {
+          selector += innerMatch;
+        } else {
+          const innerModifiers = this.splitModifiers(innerMatch);
+
+          if (innerModifiers === null) {
+            continue;
+          }
+
+          const [innerPreffix, _, innerPseudoClasses, innerClass] =
+            innerModifiers;
+
+          let innerSelector = `.${this.escapeClass(innerClass)}`;
+
+          for (const innerPseudoClass of innerPseudoClasses) {
+            if (innerPseudoClass in pseudoClasses) {
+              const pseudoClass = pseudoClasses[innerPseudoClass];
+
+              innerSelector += `:${pseudoClass.getValue()}`;
+            } else {
+              innerSelector += `:${innerPseudoClass}`;
+            }
+          }
+
+          selector = `${innerSelector}${
+            innerPreffix === null ? " " : ` ${innerPreffix} `
+          }${selector}`;
+        }
+      } else {
+        if (tmpPseudoClass in pseudoClasses) {
+          const pseudoClass = pseudoClasses[tmpPseudoClass];
+
+          selector += `:${pseudoClass.getValue()}`;
+        } else {
+          selector += `:${tmpPseudoClass}`;
+        }
+      }
+    }
+
+    return selector;
   }
 
   // recursively scan directory in search of potential classes
