@@ -596,15 +596,11 @@ module.exports = [
 
   // flex
 
-  new Rule("flex-all", { flex: "1 1 0" }),
-
-  new Rule("flex-auto", { flex: "1 1 auto" }),
-
-  new Rule("flex-initial", { flex: "0 1 auto" }),
-
   new Rule("flex-{first}-{second}-{third}", ({ first, second, third }) => ({
     flex: `${first} ${second} ${Value.parse(third)}`,
   })),
+
+  new Rule("flex-{first}", ({ first }) => ({ flex: first })),
 
   // order
 
