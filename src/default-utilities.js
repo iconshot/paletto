@@ -310,18 +310,18 @@ module.exports = [
 
   // columns
 
-  new Rule("columns-num-{first}", ({ first }) => ({ columns: first })),
-
-  new Rule("columns-num-{first}-{second}", ({ first, second }) => ({
-    columns: `${first} ${second}`,
-  })),
-
-  new Rule("columns-{first}", ({ first }) => ({
+  new Rule("columns-value-{first}", ({ first }) => ({
     columns: Value.parse(first),
   })),
 
-  new Rule("columns-{first}-{second}", ({ first, second }) => ({
+  new Rule("columns-value-{first}-{second}", ({ first, second }) => ({
     columns: `${Value.parse(first)} ${Value.parse(second)}`,
+  })),
+
+  new Rule("columns-{first}", ({ first }) => ({ columns: first })),
+
+  new Rule("columns-{first}-{second}", ({ first, second }) => ({
+    columns: `${first} ${second}`,
   })),
 
   // break after
