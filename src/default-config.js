@@ -1,6 +1,6 @@
 const Animation = require("./Animation");
-const Breakpoint = require("./Breakpoint");
 const Color = require("./Color");
+const Media = require("./Media");
 const Rule = require("./Rule");
 
 const defaultUtilities = require("./default-utilities");
@@ -43,12 +43,18 @@ module.exports = (bundler) => {
       }),
     },
     pseudoClasses: {},
-    breakpoints: {
-      xxl: new Breakpoint("(max-width: 1536px)"),
-      xl: new Breakpoint("(max-width: 1280px)"),
-      lg: new Breakpoint("(max-width: 1024px)"),
-      md: new Breakpoint("(max-width: 768px)"),
-      sm: new Breakpoint("(max-width: 640px)"),
+    mediaQueries: {
+      xxl: new Media("(max-width: 1536px)"),
+      xl: new Media("(max-width: 1280px)"),
+      lg: new Media("(max-width: 1024px)"),
+      md: new Media("(max-width: 768px)"),
+      sm: new Media("(max-width: 640px)"),
+      print: new Media("print"),
+      screen: new Media("screen"),
+      landscape: new Media("(orientation: landscape)"),
+      portrait: new Media("(orientation: portrait)"),
+      light: new Media("(prefers-color-scheme: light)"),
+      dark: new Media("(prefers-color-scheme: dark)"),
     },
     extend: null,
   };

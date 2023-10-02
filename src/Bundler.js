@@ -2,6 +2,7 @@ const path = require("path");
 
 const fsp = require("fs/promises");
 
+const Element = require("./Element");
 const Target = require("./Target");
 
 const defaultConfig = require("./default-config");
@@ -69,8 +70,6 @@ class Bundler {
   }
 
   splitModifiers(string) {
-    const { breakpoints } = this.config;
-
     const preffixRegex = /^([^a-z0-9\[\]])?(.+)/;
 
     const match = string.match(preffixRegex);
@@ -84,8 +83,7 @@ class Bundler {
     const splitRegex = /(?<!\[[^\[\]]*):/;
 
     let className = null;
-    let pseudoClasses = [];
-    let breakpoint = null;
+    let modifiers = [];
 
     const split = tmpString.split(splitRegex);
 
@@ -102,39 +100,21 @@ class Bundler {
         break;
       }
 
-      case 2: {
-        if (split[0] in breakpoints) {
-          breakpoint = split[0];
-        } else {
-          pseudoClasses = [split[0]];
-        }
-
-        className = split[1];
-
-        break;
-      }
-
       default: {
-        if (split[0] in breakpoints) {
-          breakpoint = split[0];
-          pseudoClasses = split.slice(1, -1);
-        } else {
-          pseudoClasses = split.slice(0, -1);
-        }
-
+        modifiers = split.slice(0, -1);
         className = split[split.length - 1];
 
         break;
       }
     }
 
-    return [preffix, breakpoint, pseudoClasses, className];
+    return [preffix, modifiers, className];
   }
 
   // create targets from elements
 
   convertElements() {
-    const { utilities, breakpoints } = this.config;
+    const { utilities } = this.config;
 
     for (const element of this.elements) {
       const tmpSelector = element.getSelector();
@@ -147,7 +127,7 @@ class Bundler {
           continue;
         }
 
-        const target = new Target(tmpSelector, tmpProperties);
+        const target = new Target(tmpSelector, tmpProperties, []);
 
         this.targets.push(target);
 
@@ -155,30 +135,24 @@ class Bundler {
       }
 
       const tmpTargets = [];
-      const tmpBreakpointTargets = {};
-
-      for (const key in breakpoints) {
-        tmpBreakpointTargets[key] = [];
-      }
 
       const matches = tmpApply.split(" ").filter((match) => match.length > 0);
 
       for (const match of matches) {
-        const modifiers = this.splitModifiers(match);
+        const tmpModifiers = this.splitModifiers(match);
 
-        if (modifiers === null) {
+        if (tmpModifiers === null) {
           continue;
         }
 
-        const [tmpPreffix, tmpBreakpointName, tmpPseudoClasses, tmpClass] =
-          modifiers;
+        const [preffix, modifiers, className] = tmpModifiers;
 
-        if (tmpPreffix !== null && tmpPreffix !== "!") {
+        if (preffix !== null && preffix !== "!") {
           continue;
         }
 
         for (const utility of utilities) {
-          const tmpProperties = utility.parse(tmpClass);
+          const tmpProperties = utility.parse(className);
 
           if (tmpProperties === null) {
             continue;
@@ -190,94 +164,74 @@ class Bundler {
 
           const tmpSelectors = selectors
             .map((selector) => selector.trim())
-            .map((selector) => this.parseSelector(selector, tmpPseudoClasses));
+            .map((selector) => this.appendPseudoClasses(selector, modifiers));
 
           const selector = tmpSelectors.join(", ");
 
-          if (tmpPreffix === "!") {
+          const media = this.filterMediaQueries(modifiers);
+
+          if (preffix === "!") {
             for (const key in properties) {
               properties[key] = `${properties[key]}!important`;
             }
           }
 
-          const target = new Target(selector, properties);
+          const target = new Target(selector, properties, media);
 
-          if (tmpBreakpointName !== null) {
-            tmpBreakpointTargets[tmpBreakpointName].push(target);
-          } else {
-            tmpTargets.push(target);
-          }
+          tmpTargets.push(target);
 
           break;
         }
       }
 
-      const target = new Target(tmpSelector, tmpProperties);
+      const target = new Target(tmpSelector, tmpProperties, []);
 
       tmpTargets.push(target);
 
-      const unique = (targets) => {
-        return targets.filter(
-          (target, i) =>
-            targets.findIndex(
-              (tmpTarget) => tmpTarget.getSelector() === target.getSelector()
-            ) === i
-        );
-      };
+      const unique = tmpTargets.filter((target, i) => {
+        const selector = target.getSelector();
+        const media = target.getMediaQueries();
 
-      for (const currentTarget of unique(tmpTargets)) {
-        const selector = currentTarget.getSelector();
+        const index = tmpTargets.findIndex((tmpTarget) => {
+          const tmpSelector = tmpTarget.getSelector();
+          const tmpMedia = tmpTarget.getMediaQueries();
 
-        const allTargets = tmpTargets.filter(
-          (tmpTarget) => tmpTarget.getSelector() === currentTarget.getSelector()
-        );
+          return (
+            selector === tmpSelector &&
+            media.length === tmpMedia.length &&
+            media.every((item, i) => item === tmpMedia[i])
+          );
+        });
 
-        const properties = allTargets.reduce(
-          (properties, tmpTarget) => ({
+        return index === i;
+      });
+
+      for (const target of unique) {
+        const selector = target.getSelector();
+        const media = target.getMediaQueries();
+
+        const all = tmpTargets.filter((tmpTarget) => {
+          const tmpSelector = tmpTarget.getSelector();
+          const tmpMedia = tmpTarget.getMediaQueries();
+
+          return (
+            selector === tmpSelector &&
+            media.length === tmpMedia.length &&
+            media.every((item, i) => item === tmpMedia[i])
+          );
+        });
+
+        const properties = all.reduce(
+          (properties, target) => ({
             ...properties,
-            ...tmpTarget.getProperties(),
+            ...target.getProperties(),
           }),
           {}
         );
 
-        if (Object.keys(properties).length === 0) {
-          continue;
-        }
+        const finalTarget = new Target(selector, properties, media);
 
-        const target = new Target(selector, properties);
-
-        this.targets.push(target);
-      }
-
-      for (const key in breakpoints) {
-        const breakpoint = breakpoints[key];
-
-        const tmpTargets = tmpBreakpointTargets[key];
-
-        for (const currentTarget of unique(tmpTargets)) {
-          const selector = currentTarget.getSelector();
-
-          const allTargets = tmpTargets.filter(
-            (tmpTarget) =>
-              tmpTarget.getSelector() === currentTarget.getSelector()
-          );
-
-          const properties = allTargets.reduce(
-            (properties, tmpTarget) => ({
-              ...properties,
-              ...tmpTarget.getProperties(),
-            }),
-            {}
-          );
-
-          if (Object.keys(properties).length === 0) {
-            continue;
-          }
-
-          const target = new Target(selector, properties);
-
-          breakpoint.addTarget(target);
-        }
+        this.targets.push(finalTarget);
       }
     }
 
@@ -297,7 +251,7 @@ class Bundler {
 
         const selector = `.${match}`;
 
-        const element = new Target(selector, properties);
+        const element = new Element(selector, properties);
 
         this.elements.push(element);
 
@@ -307,29 +261,25 @@ class Bundler {
   }
 
   parseUtilities(matches) {
-    const { utilities, breakpoints } = this.config;
+    const { utilities } = this.config;
 
     for (const match of matches) {
       // ignore invalid matches
 
-      const modifiers = this.splitModifiers(match);
+      const tmpModifiers = this.splitModifiers(match);
 
-      if (modifiers === null) {
+      if (tmpModifiers === null) {
         continue;
       }
 
-      const [tmpPreffix, tmpBreakpointName, tmpPseudoClasses, tmpClass] =
-        modifiers;
+      const [preffix, modifiers, className] = tmpModifiers;
 
-      if (tmpPreffix !== null && tmpPreffix !== "!") {
+      if (preffix !== null && preffix !== "!") {
         continue;
       }
-
-      const tmpBreakpoint =
-        tmpBreakpointName !== null ? breakpoints[tmpBreakpointName] : null;
 
       for (const utility of utilities) {
-        const tmpProperties = utility.parse(tmpClass);
+        const tmpProperties = utility.parse(className);
 
         if (tmpProperties === null) {
           continue;
@@ -343,21 +293,19 @@ class Bundler {
 
         let selector = `.${this.escapeClass(match)}`;
 
-        selector = this.parseSelector(selector, tmpPseudoClasses);
+        selector = this.appendPseudoClasses(selector, modifiers);
 
-        if (tmpPreffix === "!") {
+        const media = this.filterMediaQueries(modifiers);
+
+        if (preffix === "!") {
           for (const key in properties) {
             properties[key] = `${properties[key]}!important`;
           }
         }
 
-        const target = new Target(selector, properties);
+        const target = new Target(selector, properties, media);
 
-        if (tmpBreakpoint !== null) {
-          tmpBreakpoint.addTarget(target);
-        } else {
-          this.targets.push(target);
-        }
+        this.targets.push(target);
 
         break;
       }
@@ -368,36 +316,39 @@ class Bundler {
     return className.replace(/([^a-z0-9-_])/g, "\\$1");
   }
 
-  parseSelector(selector, tmpPseudoClasses) {
-    const { pseudoClasses } = this.config;
+  appendPseudoClasses(selector, modifiers) {
+    const { pseudoClasses, mediaQueries } = this.config;
 
-    for (const tmpPseudoClass of tmpPseudoClasses) {
-      const hasBrackets = tmpPseudoClass.match(/^\[.+\]$/);
+    for (const modifier of modifiers) {
+      if (modifier in mediaQueries) {
+        continue;
+      }
+
+      const hasBrackets = modifier.match(/^\[.+\]$/);
 
       if (hasBrackets !== null) {
-        const innerMatch = tmpPseudoClass.slice(1, -1);
+        const innerMatch = modifier.slice(1, -1);
 
         if (innerMatch.startsWith("::")) {
           selector += innerMatch;
         } else {
-          const innerModifiers = this.splitModifiers(innerMatch);
+          const innerTmpModifiers = this.splitModifiers(innerMatch);
 
-          if (innerModifiers === null) {
+          if (innerTmpModifiers === null) {
             continue;
           }
 
-          const [innerPreffix, _, innerPseudoClasses, innerClass] =
-            innerModifiers;
+          const [innerPreffix, innerModifiers, innerClass] = innerTmpModifiers;
 
           let innerSelector = `.${this.escapeClass(innerClass)}`;
 
-          for (const innerPseudoClass of innerPseudoClasses) {
-            if (innerPseudoClass in pseudoClasses) {
-              const pseudoClass = pseudoClasses[innerPseudoClass];
+          for (const innerModifier of innerModifiers) {
+            if (innerModifier in pseudoClasses) {
+              const pseudoClass = pseudoClasses[innerModifier];
 
               innerSelector += `:${pseudoClass.getValue()}`;
             } else {
-              innerSelector += `:${innerPseudoClass}`;
+              innerSelector += `:${innerModifier}`;
             }
           }
 
@@ -406,17 +357,25 @@ class Bundler {
           }${selector}`;
         }
       } else {
-        if (tmpPseudoClass in pseudoClasses) {
-          const pseudoClass = pseudoClasses[tmpPseudoClass];
+        if (modifier in pseudoClasses) {
+          const pseudoClass = pseudoClasses[modifier];
 
           selector += `:${pseudoClass.getValue()}`;
         } else {
-          selector += `:${tmpPseudoClass}`;
+          selector += `:${modifier}`;
         }
       }
     }
 
     return selector;
+  }
+
+  filterMediaQueries(modifiers) {
+    const { mediaQueries } = this.config;
+
+    return modifiers
+      .filter((modifier) => modifier in mediaQueries)
+      .map((modifier) => mediaQueries[modifier]);
   }
 
   // recursively scan directory in search of potential classes
@@ -464,7 +423,7 @@ class Bundler {
   }
 
   async write() {
-    const { file, animations, breakpoints } = this.config;
+    const { file, animations } = this.config;
 
     const tmpFile = path.resolve(file);
 
@@ -472,62 +431,7 @@ class Bundler {
 
     await fsp.mkdir(dir, { recursive: true });
 
-    const blocks = [];
-
-    for (const target of this.targets) {
-      const selector = target.getSelector();
-      const properties = target.getProperties();
-
-      const lines = [];
-
-      lines.push(`${selector} {`);
-
-      for (const key in properties) {
-        lines.push(`\t${key}: ${properties[key]};`);
-      }
-
-      lines.push("}");
-
-      blocks.push(lines.join("\n"));
-    }
-
-    // breakpoints are only outputted if they have targets
-
-    for (const name in breakpoints) {
-      const breakpoint = breakpoints[name];
-
-      const media = breakpoint.getMedia();
-      const targets = breakpoint.getTargets();
-
-      if (targets.length === 0) {
-        continue;
-      }
-
-      const tmpBlocks = [];
-
-      tmpBlocks.push(`@media ${media} {`);
-
-      for (const target of targets) {
-        const selector = target.getSelector();
-        const properties = target.getProperties();
-
-        const lines = [];
-
-        lines.push(`\t${selector} {`);
-
-        for (const key in properties) {
-          lines.push(`\t\t${key}: ${properties[key]};`);
-        }
-
-        lines.push(`\t}`);
-
-        tmpBlocks.push(lines.join("\n"));
-      }
-
-      tmpBlocks.push("}");
-
-      blocks.push(tmpBlocks.join("\n\n"));
-    }
+    const blocks = this.outputTargets(this.targets);
 
     // animations are always outputted because there are multiple ways to use animation-name
 
@@ -560,6 +464,122 @@ class Bundler {
     const content = blocks.join("\n\n");
 
     await fsp.writeFile(tmpFile, content);
+  }
+
+  outputTargets(targets, tabs = 0) {
+    const { mediaQueries } = this.config;
+
+    const sorted = targets.sort((targetA, targetB) => {
+      const mediaA = targetA.getMediaQueries();
+      const mediaB = targetB.getMediaQueries();
+
+      if (mediaA.length === 0 && mediaB.length === 0) {
+        return 0;
+      }
+
+      if (mediaA.length === 0 && mediaB.length !== 0) {
+        return -1;
+      }
+
+      if (mediaA.length !== 0 && mediaB.length === 0) {
+        return 1;
+      }
+
+      const keys = Object.keys(mediaQueries);
+
+      const queryA = mediaA[0];
+      const queryB = mediaB[0];
+
+      const indexA = keys.findIndex((key) => mediaQueries[key] === queryA);
+      const indexB = keys.findIndex((key) => mediaQueries[key] === queryB);
+
+      return indexA - indexB;
+    });
+
+    const filter = sorted.filter((target, i) => {
+      const media = target.getMediaQueries();
+
+      let index = null;
+
+      if (media.length === 0) {
+        index = sorted.findIndex((tmpTarget) => {
+          const tmpMedia = tmpTarget.getMediaQueries();
+
+          return tmpMedia.length === 0;
+        });
+      } else {
+        index = sorted.findIndex((tmpTarget) => {
+          const tmpMedia = tmpTarget.getMediaQueries();
+
+          return (
+            tmpMedia.length !== 0 &&
+            tmpMedia[0].getQuery() === media[0].getQuery()
+          );
+        });
+      }
+
+      return index === i;
+    });
+
+    const blocks = [];
+
+    const tab = new Array(tabs).fill("\t", 0, tabs).join("");
+
+    for (const target of filter) {
+      const media = target.getMediaQueries();
+
+      const all = sorted.filter((tmpTarget) => {
+        const media = target.getMediaQueries();
+        const tmpMedia = tmpTarget.getMediaQueries();
+
+        if (media.length === 0) {
+          return tmpMedia.length === 0;
+        }
+
+        return (
+          tmpMedia.length !== 0 &&
+          tmpMedia[0].getQuery() === media[0].getQuery()
+        );
+      });
+
+      if (media.length === 0) {
+        for (const target of all) {
+          const selector = target.getSelector();
+          const properties = target.getProperties();
+
+          const lines = [];
+
+          lines.push(`${tab}${selector} {`);
+
+          for (const property in properties) {
+            lines.push(`${tab}\t${property}: ${properties[property]};`);
+          }
+
+          lines.push(`${tab}}`);
+
+          blocks.push(lines.join("\n"));
+        }
+      } else {
+        blocks.push(`${tab}@media ${media[0].getQuery()} {`);
+
+        const newTargets = all.map(
+          (target) =>
+            new Target(
+              target.getSelector(),
+              target.getProperties(),
+              target.getMediaQueries().slice(1)
+            )
+        );
+
+        const tmpBlocks = this.outputTargets(newTargets, tabs + 1);
+
+        blocks.push(tmpBlocks.join("\n\n"));
+
+        blocks.push(`${tab}}`);
+      }
+    }
+
+    return blocks;
   }
 }
 

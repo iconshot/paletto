@@ -1,7 +1,8 @@
 class Target {
-  constructor(selector, properties) {
+  constructor(selector, properties, mediaQueries) {
     this.selector = selector;
     this.properties = properties;
+    this.mediaQueries = mediaQueries;
   }
 
   getSelector() {
@@ -10,6 +11,10 @@ class Target {
 
   getProperties() {
     return this.properties;
+  }
+
+  getMediaQueries() {
+    return this.mediaQueries;
   }
 }
 
