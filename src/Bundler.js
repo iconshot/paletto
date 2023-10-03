@@ -469,7 +469,7 @@ class Bundler {
   outputTargets(targets, tabs = 0) {
     const { mediaQueries } = this.config;
 
-    const sorted = targets.sort((targetA, targetB) => {
+    targets.sort((targetA, targetB) => {
       const mediaA = targetA.getMediaQueries();
       const mediaB = targetB.getMediaQueries();
 
@@ -496,19 +496,19 @@ class Bundler {
       return indexA - indexB;
     });
 
-    const filter = sorted.filter((target, i) => {
+    const filter = targets.filter((target, i) => {
       const media = target.getMediaQueries();
 
       let index = null;
 
       if (media.length === 0) {
-        index = sorted.findIndex((tmpTarget) => {
+        index = targets.findIndex((tmpTarget) => {
           const tmpMedia = tmpTarget.getMediaQueries();
 
           return tmpMedia.length === 0;
         });
       } else {
-        index = sorted.findIndex((tmpTarget) => {
+        index = targets.findIndex((tmpTarget) => {
           const tmpMedia = tmpTarget.getMediaQueries();
 
           return (
@@ -528,7 +528,7 @@ class Bundler {
     for (const target of filter) {
       const media = target.getMediaQueries();
 
-      const all = sorted.filter((tmpTarget) => {
+      const all = targets.filter((tmpTarget) => {
         const media = target.getMediaQueries();
         const tmpMedia = tmpTarget.getMediaQueries();
 
