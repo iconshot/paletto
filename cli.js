@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const path = require("path");
-const fs = require("fs");
+const path = require("node:path");
+const fs = require("node:fs");
 
 const Bundler = require("./src/Bundler");
 
@@ -20,7 +20,7 @@ async function bundle() {
 
   await bundler.bundle();
 
-  console.log("Paletto: Bundled.");
+  console.log("\033[36mPaletto: Bundled.");
 }
 
 async function run() {
