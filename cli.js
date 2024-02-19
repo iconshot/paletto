@@ -58,6 +58,10 @@ async function run() {
 
     watchers = src.map((tmpSrc) => {
       return fs.watch(tmpSrc, { recursive: true }, (_, filename) => {
+        if (filename === null) {
+          return;
+        }
+
         // ignore when change found in "file"
 
         const tmpFilename = path.resolve(tmpSrc, filename);
