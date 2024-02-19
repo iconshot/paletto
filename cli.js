@@ -5,6 +5,8 @@ const fs = require("node:fs");
 
 const Bundler = require("./src/Bundler");
 
+let bundler = null;
+
 function requireUncached(module) {
   delete require.cache[require.resolve(module)];
 
@@ -12,21 +14,21 @@ function requireUncached(module) {
 }
 
 async function bundle() {
-  console.log("Paletto: Bundling CSS...");
+  console.log("\x1b[0mPaletto: Bundling CSS...");
 
   const palettoConfig = requireUncached(path.resolve("./paletto.config"));
 
-  const bundler = new Bundler(palettoConfig);
+  await bundler.bundle(palettoConfig);
 
-  await bundler.bundle();
-
-  console.log("\033[36mPaletto: Bundled.");
+  console.log("\x1b[36mPaletto: Bundled.");
 }
 
 async function run() {
   const args = process.argv.slice(2);
 
   const watch = args.length > 0 && args[0] === "--watch";
+
+  bundler = new Bundler();
 
   await bundle();
 
@@ -87,6 +89,8 @@ async function run() {
     clearTimeout(configTimeout);
 
     configTimeout = setTimeout(() => {
+      bundler = new Bundler();
+
       closeWatchers();
 
       openWatchers();

@@ -8,11 +8,16 @@ const Target = require("./Target");
 const defaultConfig = require("./default-config");
 
 class Bundler {
-  constructor(config) {
-    this.config = this.extend(config);
+  constructor() {
+    this.config = null;
 
     this.elements = [];
     this.targets = [];
+
+    this.caches = {
+      components: new Map(),
+      utilities: new Map(),
+    };
   }
 
   getConfig() {
@@ -45,7 +50,9 @@ class Bundler {
     return tmpConfig;
   }
 
-  async bundle() {
+  async bundle(config) {
+    this.config = this.extend(config);
+
     const { src, elements } = this.config;
 
     this.elements = elements;
@@ -54,11 +61,13 @@ class Bundler {
 
     const matches = [];
 
-    for (const tmpSrc of src) {
-      const tmpPath = path.resolve(tmpSrc);
+    await Promise.all(
+      src.map(async (tmpSrc) => {
+        const tmpPath = path.resolve(tmpSrc);
 
-      await this.scan(tmpPath, matches);
-    }
+        await this.scan(tmpPath, matches);
+      })
+    );
 
     this.parseComponents(matches);
 
@@ -67,6 +76,31 @@ class Bundler {
     this.parseUtilities(matches);
 
     await this.write();
+
+    this.elements = [];
+    this.targets = [];
+  }
+
+  parse(string, rules, cache) {
+    if (cache.has(string)) {
+      return cache.get(string);
+    }
+
+    let result = null;
+
+    for (const rule of rules) {
+      const tmpResult = rule.parse(string);
+
+      if (tmpResult !== null) {
+        result = tmpResult;
+
+        break;
+      }
+    }
+
+    cache.set(string, result);
+
+    return result;
   }
 
   splitModifiers(string) {
@@ -151,37 +185,37 @@ class Bundler {
           continue;
         }
 
-        for (const utility of utilities) {
-          const tmpProperties = utility.parse(className);
+        const tmpProperties = this.parse(
+          className,
+          utilities,
+          this.caches.utilities
+        );
 
-          if (tmpProperties === null) {
-            continue;
-          }
-
-          const properties = { ...tmpProperties };
-
-          const selectors = tmpSelector.match(/(\\.|[^,])+/g);
-
-          const tmpSelectors = selectors
-            .map((selector) => selector.trim())
-            .map((selector) => this.appendPseudoClasses(selector, modifiers));
-
-          const selector = tmpSelectors.join(", ");
-
-          const media = this.filterMediaQueries(modifiers);
-
-          if (preffix === "!") {
-            for (const key in properties) {
-              properties[key] = `${properties[key]}!important`;
-            }
-          }
-
-          const target = new Target(selector, properties, media);
-
-          tmpTargets.push(target);
-
-          break;
+        if (tmpProperties === null) {
+          continue;
         }
+
+        const properties = { ...tmpProperties };
+
+        const selectors = tmpSelector.match(/(\\.|[^,])+/g);
+
+        const tmpSelectors = selectors
+          .map((selector) => selector.trim())
+          .map((selector) => this.appendPseudoClasses(selector, modifiers));
+
+        const selector = tmpSelectors.join(", ");
+
+        const media = this.filterMediaQueries(modifiers);
+
+        if (preffix === "!") {
+          for (const key in properties) {
+            properties[key] = `${properties[key]}!important`;
+          }
+        }
+
+        const target = new Target(selector, properties, media);
+
+        tmpTargets.push(target);
       }
 
       const target = new Target(tmpSelector, tmpProperties, []);
@@ -242,21 +276,17 @@ class Bundler {
     const { components } = this.config;
 
     for (const match of matches) {
-      for (const component of components) {
-        const properties = component.parse(match);
+      const properties = this.parse(match, components, this.caches.components);
 
-        if (properties === null) {
-          continue;
-        }
-
-        const selector = `.${match}`;
-
-        const element = new Element(selector, properties);
-
-        this.elements.push(element);
-
-        break;
+      if (properties === null) {
+        continue;
       }
+
+      const selector = `.${match}`;
+
+      const element = new Element(selector, properties);
+
+      this.elements.push(element);
     }
   }
 
@@ -278,37 +308,37 @@ class Bundler {
         continue;
       }
 
-      for (const utility of utilities) {
-        const tmpProperties = utility.parse(className);
+      const tmpProperties = this.parse(
+        className,
+        utilities,
+        this.caches.utilities
+      );
 
-        if (tmpProperties === null) {
-          continue;
-        }
-
-        const { "@apply": apply = null, ...properties } = tmpProperties;
-
-        if (Object.keys(properties).length === 0) {
-          break;
-        }
-
-        let selector = `.${this.escapeClass(match)}`;
-
-        selector = this.appendPseudoClasses(selector, modifiers);
-
-        const media = this.filterMediaQueries(modifiers);
-
-        if (preffix === "!") {
-          for (const key in properties) {
-            properties[key] = `${properties[key]}!important`;
-          }
-        }
-
-        const target = new Target(selector, properties, media);
-
-        this.targets.push(target);
-
-        break;
+      if (tmpProperties === null) {
+        continue;
       }
+
+      const { "@apply": apply = null, ...properties } = tmpProperties;
+
+      if (Object.keys(properties).length === 0) {
+        continue;
+      }
+
+      let selector = `.${this.escapeClass(match)}`;
+
+      selector = this.appendPseudoClasses(selector, modifiers);
+
+      const media = this.filterMediaQueries(modifiers);
+
+      if (preffix === "!") {
+        for (const key in properties) {
+          properties[key] = `${properties[key]}!important`;
+        }
+      }
+
+      const target = new Target(selector, properties, media);
+
+      this.targets.push(target);
     }
   }
 
@@ -388,11 +418,13 @@ class Bundler {
     if (stat.isDirectory()) {
       const files = await fsp.readdir(src);
 
-      for (const file of files) {
-        const tmpFile = path.resolve(src, file);
+      await Promise.all(
+        files.map(async (file) => {
+          const tmpFile = path.resolve(src, file);
 
-        await this.scan(tmpFile, matches, true);
-      }
+          await this.scan(tmpFile, matches, true);
+        })
+      );
     } else {
       if (isChild) {
         const endsWith = extensions.some((extension) =>
