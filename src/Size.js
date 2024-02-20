@@ -1,4 +1,4 @@
-class Value {
+class Size {
   static parse(value) {
     // if "/" found, return percentage
 
@@ -22,4 +22,4 @@ class Value {
   }
 }
 
-module.exports = Value;
+module.exports = Size;

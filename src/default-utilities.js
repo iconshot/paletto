@@ -1,5 +1,5 @@
 const Rule = require("./Rule");
-const Value = require("./Value");
+const Size = require("./Size");
 
 function createUtilities(pairs, property) {
   const createObject = (value) => {
@@ -60,19 +60,19 @@ module.exports = [
   // font size
 
   new Rule("font-size-{value}", ({ value }) => ({
-    "font-size": Value.parse(value),
+    "font-size": Size.parse(value),
   })),
 
   // letter spacing
 
   new Rule("letter-spacing-{value}", ({ value }) => ({
-    "letter-spacing": Value.parse(value),
+    "letter-spacing": Size.parse(value),
   })),
 
   // line height
 
   new Rule("line-height-{value}", ({ value }) => ({
-    "line-height": Value.parse(value),
+    "line-height": Size.parse(value),
   })),
 
   // line break
@@ -173,13 +173,13 @@ module.exports = [
   // text decoration thickness
 
   new Rule("text-decoration-thickness-{value}", ({ value }) => ({
-    "text-decoration-thickness": Value.parse(value),
+    "text-decoration-thickness": Size.parse(value),
   })),
 
   // text underline offset
 
   new Rule("text-underline-offset-{value}", ({ value }) => ({
-    "text-underline-offset": Value.parse(value),
+    "text-underline-offset": Size.parse(value),
   })),
 
   // text underline position
@@ -235,24 +235,24 @@ module.exports = [
   // text indent
 
   new Rule("text-indent-{first}", ({ first }) => ({
-    "text-indent": Value.parse(first),
+    "text-indent": Size.parse(first),
   })),
 
   new Rule("text-indent-{first}-{second}", ({ first, second }) => ({
-    "text-indent": `${Value.parse(first)} ${second}`,
+    "text-indent": `${Size.parse(first)} ${second}`,
   })),
 
   new Rule(
     "text-indent-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      "text-indent": `${Value.parse(first)} ${second} ${third}`,
+      "text-indent": `${Size.parse(first)} ${second} ${third}`,
     })
   ),
 
   // vertical align
 
   new Rule("vertical-align-{value}", ({ value }) => ({
-    "vertical-align": Value.parse(value),
+    "vertical-align": Size.parse(value),
   })),
 
   // white space
@@ -286,7 +286,7 @@ module.exports = [
   new Rule("text-shadow-{first}", ({ first }) => ({ "text-shadow": first })),
 
   new Rule("text-shadow-{first}-{second}", ({ first, second }) => ({
-    "text-shadow": `${Value.parse(first)} ${Value.parse(
+    "text-shadow": `${Size.parse(first)} ${Size.parse(
       second
     )} var(--paletto-text-shadow-color)`,
   })),
@@ -294,9 +294,9 @@ module.exports = [
   new Rule(
     "text-shadow-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      "text-shadow": `${Value.parse(first)} ${Value.parse(
-        second
-      )} ${Value.parse(third)} var(--paletto-text-shadow-color)`,
+      "text-shadow": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
+        third
+      )} var(--paletto-text-shadow-color)`,
     })
   ),
 
@@ -311,11 +311,11 @@ module.exports = [
   // columns
 
   new Rule("columns-value-{first}", ({ first }) => ({
-    columns: Value.parse(first),
+    columns: Size.parse(first),
   })),
 
   new Rule("columns-value-{first}-{second}", ({ first, second }) => ({
-    columns: `${Value.parse(first)} ${Value.parse(second)}`,
+    columns: `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("columns-{first}", ({ first }) => ({ columns: first })),
@@ -412,19 +412,19 @@ module.exports = [
   // object position
 
   new Rule("object-position-{first}", ({ first }) => ({
-    "object-position": Value.parse(first),
+    "object-position": Size.parse(first),
   })),
 
   new Rule("object-position-{first}-{second}", ({ first, second }) => ({
-    "object-position": `${Value.parse(first)} ${Value.parse(second)}`,
+    "object-position": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule(
     "object-position-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      "object-position": `${first} ${Value.parse(
-        second
-      )} ${third} ${Value.parse(fourth)}`,
+      "object-position": `${first} ${Size.parse(second)} ${third} ${Size.parse(
+        fourth
+      )}`,
     })
   ),
 
@@ -469,71 +469,71 @@ module.exports = [
   // inset inline
 
   new Rule("inset-inline-s-{value}", ({ value }) => ({
-    "inset-inline-start": Value.parse(value),
+    "inset-inline-start": Size.parse(value),
   })),
 
   new Rule("inset-inline-e-{value}", ({ value }) => ({
-    "inset-inline-end": Value.parse(value),
+    "inset-inline-end": Size.parse(value),
   })),
 
   new Rule("inset-inline-{first}", ({ first }) => ({
-    "inset-inline": Value.parse(first),
+    "inset-inline": Size.parse(first),
   })),
 
   new Rule("inset-inline-{first}-{second}", ({ first, second }) => ({
-    "inset-inline": `${Value.parse(first)} ${Value.parse(second)}`,
+    "inset-inline": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // inset block
 
   new Rule("inset-block-s-{value}", ({ value }) => ({
-    "inset-block-start": Value.parse(value),
+    "inset-block-start": Size.parse(value),
   })),
 
   new Rule("inset-block-e-{value}", ({ value }) => ({
-    "inset-block-end": Value.parse(value),
+    "inset-block-end": Size.parse(value),
   })),
 
   new Rule("inset-block-{first}", ({ first }) => ({
-    "inset-block": Value.parse(first),
+    "inset-block": Size.parse(first),
   })),
 
   new Rule("inset-block-{first}-{second}", ({ first, second }) => ({
-    "inset-block": `${Value.parse(first)} ${Value.parse(second)}`,
+    "inset-block": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // inset
 
-  new Rule("inset-{first}", ({ first }) => ({ inset: Value.parse(first) })),
+  new Rule("inset-{first}", ({ first }) => ({ inset: Size.parse(first) })),
 
   new Rule("inset-{first}-{second}", ({ first, second }) => ({
-    inset: `${Value.parse(first)} ${Value.parse(second)}`,
+    inset: `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("inset-{first}-{second}-{third}", ({ first, second, third }) => ({
-    inset: `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(third)}`,
+    inset: `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(third)}`,
   })),
 
   new Rule(
     "inset-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      inset: `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
+      inset: `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
         third
-      )} ${Value.parse(fourth)}`,
+      )} ${Size.parse(fourth)}`,
     })
   ),
 
   // top, bottom, right, left
 
-  new Rule("top-{value}", ({ value }) => ({ top: Value.parse(value) })),
+  new Rule("top-{value}", ({ value }) => ({ top: Size.parse(value) })),
 
   new Rule("bottom-{value}", ({ value }) => ({
-    bottom: Value.parse(value),
+    bottom: Size.parse(value),
   })),
 
-  new Rule("right-{value}", ({ value }) => ({ right: Value.parse(value) })),
+  new Rule("right-{value}", ({ value }) => ({ right: Size.parse(value) })),
 
-  new Rule("left-{value}", ({ value }) => ({ left: Value.parse(value) })),
+  new Rule("left-{value}", ({ value }) => ({ left: Size.parse(value) })),
 
   // visibility
 
@@ -591,13 +591,13 @@ module.exports = [
   // flex basis
 
   new Rule("flex-basis-{value}", ({ value }) => ({
-    "flex-basis": Value.parse(value),
+    "flex-basis": Size.parse(value),
   })),
 
   // flex
 
   new Rule("flex-{first}-{second}-{third}", ({ first, second, third }) => ({
-    flex: `${first} ${second} ${Value.parse(third)}`,
+    flex: `${first} ${second} ${Size.parse(third)}`,
   })),
 
   new Rule("flex-{first}", ({ first }) => ({ flex: first })),
@@ -608,18 +608,18 @@ module.exports = [
 
   // gap
 
-  new Rule("gap-{first}", ({ first }) => ({ gap: Value.parse(first) })),
+  new Rule("gap-{first}", ({ first }) => ({ gap: Size.parse(first) })),
 
   new Rule("gap-{first}-{second}", ({ first, second }) => ({
-    gap: `${Value.parse(first)} ${Value.parse(second)}`,
+    gap: `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("column-gap-{value}", ({ value }) => ({
-    "column-gap": Value.parse(value),
+    "column-gap": Size.parse(value),
   })),
 
   new Rule("row-gap-{value}", ({ value }) => ({
-    "row-gap": Value.parse(value),
+    "row-gap": Size.parse(value),
   })),
 
   // justify content
@@ -776,203 +776,199 @@ module.exports = [
   // margin inline
 
   new Rule("m-inline-s-{value}", ({ value }) => ({
-    "margin-inline-start": Value.parse(value),
+    "margin-inline-start": Size.parse(value),
   })),
 
   new Rule("m-inline-e-{value}", ({ value }) => ({
-    "margin-inline-end": Value.parse(value),
+    "margin-inline-end": Size.parse(value),
   })),
 
   new Rule("m-inline-{first}", ({ first }) => ({
-    "margin-inline": Value.parse(first),
+    "margin-inline": Size.parse(first),
   })),
 
   new Rule("m-inline-{first}-{second}", ({ first, second }) => ({
-    "margin-inline": `${Value.parse(first)} ${Value.parse(second)}`,
+    "margin-inline": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // margin block
 
   new Rule("m-block-s-{value}", ({ value }) => ({
-    "margin-block-start": Value.parse(value),
+    "margin-block-start": Size.parse(value),
   })),
 
   new Rule("m-block-e-{value}", ({ value }) => ({
-    "margin-block-end": Value.parse(value),
+    "margin-block-end": Size.parse(value),
   })),
 
   new Rule("m-block-{first}", ({ first }) => ({
-    "margin-block": Value.parse(first),
+    "margin-block": Size.parse(first),
   })),
 
   new Rule("m-block-{first}-{second}", ({ first, second }) => ({
-    "margin-block": `${Value.parse(first)} ${Value.parse(second)}`,
+    "margin-block": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // margin
 
-  new Rule("m-{first}", ({ first }) => ({ margin: Value.parse(first) })),
+  new Rule("m-{first}", ({ first }) => ({ margin: Size.parse(first) })),
 
   new Rule("m-{first}-{second}", ({ first, second }) => ({
-    margin: `${Value.parse(first)} ${Value.parse(second)}`,
+    margin: `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("m-{first}-{second}-{third}", ({ first, second, third }) => ({
-    margin: `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
-      third
-    )}`,
+    margin: `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(third)}`,
   })),
 
   new Rule(
     "m-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      margin: `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
+      margin: `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
         third
-      )} ${Value.parse(fourth)}`,
+      )} ${Size.parse(fourth)}`,
     })
   ),
 
   new Rule("mt-{value}", ({ value }) => ({
-    "margin-top": Value.parse(value),
+    "margin-top": Size.parse(value),
   })),
 
   new Rule("mb-{value}", ({ value }) => ({
-    "margin-bottom": Value.parse(value),
+    "margin-bottom": Size.parse(value),
   })),
 
   new Rule("ml-{value}", ({ value }) => ({
-    "margin-left": Value.parse(value),
+    "margin-left": Size.parse(value),
   })),
 
   new Rule("mr-{value}", ({ value }) => ({
-    "margin-right": Value.parse(value),
+    "margin-right": Size.parse(value),
   })),
 
   new Rule("mx-{value}", ({ value }) => ({
-    "margin-left": Value.parse(value),
-    "margin-right": Value.parse(value),
+    "margin-left": Size.parse(value),
+    "margin-right": Size.parse(value),
   })),
 
   new Rule("my-{value}", ({ value }) => ({
-    "margin-top": Value.parse(value),
-    "margin-bottom": Value.parse(value),
+    "margin-top": Size.parse(value),
+    "margin-bottom": Size.parse(value),
   })),
 
   // padding inline
 
   new Rule("p-inline-s-{value}", ({ value }) => ({
-    "padding-inline-start": Value.parse(value),
+    "padding-inline-start": Size.parse(value),
   })),
 
   new Rule("p-inline-e-{value}", ({ value }) => ({
-    "padding-inline-end": Value.parse(value),
+    "padding-inline-end": Size.parse(value),
   })),
 
   new Rule("p-inline-{first}", ({ first }) => ({
-    "padding-inline": Value.parse(first),
+    "padding-inline": Size.parse(first),
   })),
 
   new Rule("p-inline-{first}-{second}", ({ first, second }) => ({
-    "padding-inline": `${Value.parse(first)} ${Value.parse(second)}`,
+    "padding-inline": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // padding block
 
   new Rule("p-block-s-{value}", ({ value }) => ({
-    "padding-block-start": Value.parse(value),
+    "padding-block-start": Size.parse(value),
   })),
 
   new Rule("p-block-e-{value}", ({ value }) => ({
-    "padding-block-end": Value.parse(value),
+    "padding-block-end": Size.parse(value),
   })),
 
   new Rule("p-block-{first}", ({ first }) => ({
-    "padding-block": Value.parse(first),
+    "padding-block": Size.parse(first),
   })),
 
   new Rule("p-block-{first}-{second}", ({ first, second }) => ({
-    "padding-block": `${Value.parse(first)} ${Value.parse(second)}`,
+    "padding-block": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // padding
 
-  new Rule("p-{first}", ({ first }) => ({ padding: Value.parse(first) })),
+  new Rule("p-{first}", ({ first }) => ({ padding: Size.parse(first) })),
 
   new Rule("p-{first}-{second}", ({ first, second }) => ({
-    padding: `${Value.parse(first)} ${Value.parse(second)}`,
+    padding: `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("p-{first}-{second}-{third}", ({ first, second, third }) => ({
-    padding: `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
-      third
-    )}`,
+    padding: `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(third)}`,
   })),
 
   new Rule(
     "p-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      padding: `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
+      padding: `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
         third
-      )} ${Value.parse(fourth)}`,
+      )} ${Size.parse(fourth)}`,
     })
   ),
 
   new Rule("pt-{value}", ({ value }) => ({
-    "padding-top": Value.parse(value),
+    "padding-top": Size.parse(value),
   })),
 
   new Rule("pb-{value}", ({ value }) => ({
-    "padding-bottom": Value.parse(value),
+    "padding-bottom": Size.parse(value),
   })),
 
   new Rule("pl-{value}", ({ value }) => ({
-    "padding-left": Value.parse(value),
+    "padding-left": Size.parse(value),
   })),
 
   new Rule("pr-{value}", ({ value }) => ({
-    "padding-right": Value.parse(value),
+    "padding-right": Size.parse(value),
   })),
 
   new Rule("px-{value}", ({ value }) => ({
-    "padding-left": Value.parse(value),
-    "padding-right": Value.parse(value),
+    "padding-left": Size.parse(value),
+    "padding-right": Size.parse(value),
   })),
 
   new Rule("py-{value}", ({ value }) => ({
-    "padding-top": Value.parse(value),
-    "padding-bottom": Value.parse(value),
+    "padding-top": Size.parse(value),
+    "padding-bottom": Size.parse(value),
   })),
 
   // width
 
-  new Rule("w-{value}", ({ value }) => ({ width: Value.parse(value) })),
+  new Rule("w-{value}", ({ value }) => ({ width: Size.parse(value) })),
 
   // min width
 
   new Rule("min-w-{value}", ({ value }) => ({
-    "min-width": Value.parse(value),
+    "min-width": Size.parse(value),
   })),
 
   // max width
 
   new Rule("max-w-{value}", ({ value }) => ({
-    "max-width": Value.parse(value),
+    "max-width": Size.parse(value),
   })),
 
   // height
 
-  new Rule("h-{value}", ({ value }) => ({ height: Value.parse(value) })),
+  new Rule("h-{value}", ({ value }) => ({ height: Size.parse(value) })),
 
   // min height
 
   new Rule("min-h-{value}", ({ value }) => ({
-    "min-height": Value.parse(value),
+    "min-height": Size.parse(value),
   })),
 
   // max height
 
   new Rule("max-h-{value}", ({ value }) => ({
-    "max-height": Value.parse(value),
+    "max-height": Size.parse(value),
   })),
 
   // background attachment
@@ -1037,28 +1033,28 @@ module.exports = [
   ),
 
   new Rule("bg-position-{first}", ({ first }) => ({
-    "background-position": Value.parse(first),
+    "background-position": Size.parse(first),
   })),
 
   new Rule("bg-position-{first}-{second}", ({ first, second }) => ({
-    "background-position": `${Value.parse(first)} ${Value.parse(second)}`,
+    "background-position": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule(
     "bg-position-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      "background-position": `${Value.parse(first)} ${Value.parse(
+      "background-position": `${Size.parse(first)} ${Size.parse(
         second
-      )} ${Value.parse(third)}`,
+      )} ${Size.parse(third)}`,
     })
   ),
 
   new Rule(
     "bg-position-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      "background-position": `${Value.parse(first)} ${Value.parse(
+      "background-position": `${Size.parse(first)} ${Size.parse(
         second
-      )} ${Value.parse(third)} ${Value.parse(fourth)}`,
+      )} ${Size.parse(third)} ${Size.parse(fourth)}`,
     })
   ),
 
@@ -1094,11 +1090,11 @@ module.exports = [
   ),
 
   new Rule("bg-size-{first}", ({ first }) => ({
-    "background-size": Value.parse(first),
+    "background-size": Size.parse(first),
   })),
 
   new Rule("bg-size-{first}-{second}", ({ first, second }) => ({
-    "background-size": `${Value.parse(first)} ${Value.parse(second)}`,
+    "background-size": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // background-image
@@ -1162,11 +1158,11 @@ module.exports = [
   // border spacing
 
   new Rule("border-spacing-{first}", ({ first }) => ({
-    "border-spacing": Value.parse(first),
+    "border-spacing": Size.parse(first),
   })),
 
   new Rule("border-spacing-{first}-{second}", ({ first, second }) => ({
-    "border-spacing": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-spacing": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // table layout
@@ -1180,155 +1176,149 @@ module.exports = [
   // border radius
 
   new Rule("rounded-t-{first}", ({ first }) => ({
-    "border-top-left-radius": Value.parse(first),
-    "border-top-right-radius": Value.parse(first),
+    "border-top-left-radius": Size.parse(first),
+    "border-top-right-radius": Size.parse(first),
   })),
 
   new Rule("rounded-t-{first}-{second}", ({ first, second }) => ({
-    "border-top-left-radius": `${Value.parse(first)} ${Value.parse(second)}`,
-    "border-top-right-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-top-left-radius": `${Size.parse(first)} ${Size.parse(second)}`,
+    "border-top-right-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-b-{first}", ({ first }) => ({
-    "border-bottom-left-radius": Value.parse(first),
-    "border-bottom-right-radius": Value.parse(first),
+    "border-bottom-left-radius": Size.parse(first),
+    "border-bottom-right-radius": Size.parse(first),
   })),
 
   new Rule("rounded-b-{first}-{second}", ({ first, second }) => ({
-    "border-bottom-left-radius": `${Value.parse(first)} ${Value.parse(second)}`,
-    "border-bottom-right-radius": `${Value.parse(first)} ${Value.parse(
-      second
-    )}`,
+    "border-bottom-left-radius": `${Size.parse(first)} ${Size.parse(second)}`,
+    "border-bottom-right-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-r-{first}", ({ first }) => ({
-    "border-top-right-radius": Value.parse(first),
-    "border-bottom-right-radius": Value.parse(first),
+    "border-top-right-radius": Size.parse(first),
+    "border-bottom-right-radius": Size.parse(first),
   })),
 
   new Rule("rounded-r-{first}-{second}", ({ first, second }) => ({
-    "border-top-right-radius": `${Value.parse(first)} ${Value.parse(second)}`,
-    "border-bottom-right-radius": `${Value.parse(first)} ${Value.parse(
-      second
-    )}`,
+    "border-top-right-radius": `${Size.parse(first)} ${Size.parse(second)}`,
+    "border-bottom-right-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-l-{first}", ({ first }) => ({
-    "border-top-left-radius": Value.parse(first),
-    "border-bottom-left-radius": Value.parse(first),
+    "border-top-left-radius": Size.parse(first),
+    "border-bottom-left-radius": Size.parse(first),
   })),
 
   new Rule("rounded-l-{first}-{second}", ({ first, second }) => ({
-    "border-top-left-radius": `${Value.parse(first)} ${Value.parse(second)}`,
-    "border-bottom-left-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-top-left-radius": `${Size.parse(first)} ${Size.parse(second)}`,
+    "border-bottom-left-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-tl-{first}", ({ first }) => ({
-    "border-top-left-radius": Value.parse(first),
+    "border-top-left-radius": Size.parse(first),
   })),
 
   new Rule("rounded-tl-{first}-{second}", ({ first, second }) => ({
-    "border-top-left-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-top-left-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-tr-{first}", ({ first }) => ({
-    "border-top-right-radius": Value.parse(first),
+    "border-top-right-radius": Size.parse(first),
   })),
 
   new Rule("rounded-tr-{first}-{second}", ({ first, second }) => ({
-    "border-top-right-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-top-right-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-bl-{first}", ({ first }) => ({
-    "border-bottom-left-radius": Value.parse(first),
+    "border-bottom-left-radius": Size.parse(first),
   })),
 
   new Rule("rounded-bl-{first}-{second}", ({ first, second }) => ({
-    "border-bottom-left-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-bottom-left-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-br-{first}", ({ first }) => ({
-    "border-bottom-right-radius": Value.parse(first),
+    "border-bottom-right-radius": Size.parse(first),
   })),
 
   new Rule("rounded-br-{first}-{second}", ({ first, second }) => ({
-    "border-bottom-right-radius": `${Value.parse(first)} ${Value.parse(
-      second
-    )}`,
+    "border-bottom-right-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-s-{first}", ({ first }) => ({
-    "border-start-start-radius": Value.parse(first),
-    "border-start-end-radius": Value.parse(first),
+    "border-start-start-radius": Size.parse(first),
+    "border-start-end-radius": Size.parse(first),
   })),
 
   new Rule("rounded-s-{first}-{second}", ({ first, second }) => ({
-    "border-start-start-radius": `${Value.parse(first)} ${Value.parse(second)}`,
-    "border-start-end-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-start-start-radius": `${Size.parse(first)} ${Size.parse(second)}`,
+    "border-start-end-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-e-{first}", ({ first }) => ({
-    "border-end-start-radius": Value.parse(first),
-    "border-end-end-radius": Value.parse(first),
+    "border-end-start-radius": Size.parse(first),
+    "border-end-end-radius": Size.parse(first),
   })),
 
   new Rule("rounded-e-{first}-{second}", ({ first, second }) => ({
-    "border-end-start-radius": `${Value.parse(first)} ${Value.parse(second)}`,
-    "border-end-end-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-end-start-radius": `${Size.parse(first)} ${Size.parse(second)}`,
+    "border-end-end-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-ss-{first}", ({ first }) => ({
-    "border-start-start-radius": Value.parse(first),
+    "border-start-start-radius": Size.parse(first),
   })),
 
   new Rule("rounded-ss-{first}-{second}", ({ first, second }) => ({
-    "border-start-start-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-start-start-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-se-{first}", ({ first }) => ({
-    "border-start-end-radius": Value.parse(first),
+    "border-start-end-radius": Size.parse(first),
   })),
 
   new Rule("rounded-se-{first}-{second}", ({ first, second }) => ({
-    "border-start-end-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-start-end-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-es-{first}", ({ first }) => ({
-    "border-end-start-radius": Value.parse(first),
+    "border-end-start-radius": Size.parse(first),
   })),
 
   new Rule("rounded-es-{first}-{second}", ({ first, second }) => ({
-    "border-end-start-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-end-start-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-ee-{first}", ({ first }) => ({
-    "border-end-end-radius": Value.parse(first),
+    "border-end-end-radius": Size.parse(first),
   })),
 
   new Rule("rounded-ee-{first}-{second}", ({ first, second }) => ({
-    "border-end-end-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-end-end-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-{first}", ({ first }) => ({
-    "border-radius": Value.parse(first),
+    "border-radius": Size.parse(first),
   })),
 
   new Rule("rounded-{first}-{second}", ({ first, second }) => ({
-    "border-radius": `${Value.parse(first)} ${Value.parse(second)}`,
+    "border-radius": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("rounded-{first}-{second}-{third}", ({ first, second, third }) => ({
-    "border-radius": `${Value.parse(first)} ${Value.parse(
-      second
-    )} ${Value.parse(third)}`,
+    "border-radius": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
+      third
+    )}`,
   })),
 
   new Rule(
     "rounded-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      "border-radius": `${Value.parse(first)} ${Value.parse(
-        second
-      )} ${Value.parse(third)} ${Value.parse(fourth)}`,
+      "border-radius": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
+        third
+      )} ${Size.parse(fourth)}`,
     })
   ),
 
@@ -1351,7 +1341,7 @@ module.exports = [
   })),
 
   new Rule("border-inline-s-{value}", ({ value }) => ({
-    "border-inline-start-width": Value.parse(value),
+    "border-inline-start-width": Size.parse(value),
   })),
 
   // border inline end
@@ -1373,7 +1363,7 @@ module.exports = [
   })),
 
   new Rule("border-inline-e-{value}", ({ value }) => ({
-    "border-inline-end-width": Value.parse(value),
+    "border-inline-end-width": Size.parse(value),
   })),
 
   // border inline
@@ -1395,7 +1385,7 @@ module.exports = [
   })),
 
   new Rule("border-inline-{value}", ({ value }) => ({
-    "border-inline-width": Value.parse(value),
+    "border-inline-width": Size.parse(value),
   })),
 
   // border block start
@@ -1417,7 +1407,7 @@ module.exports = [
   })),
 
   new Rule("border-block-s-{value}", ({ value }) => ({
-    "border-block-start-width": Value.parse(value),
+    "border-block-start-width": Size.parse(value),
   })),
 
   // border block end
@@ -1439,7 +1429,7 @@ module.exports = [
   })),
 
   new Rule("border-block-e-{value}", ({ value }) => ({
-    "border-block-end-width": Value.parse(value),
+    "border-block-end-width": Size.parse(value),
   })),
 
   // border block
@@ -1461,7 +1451,7 @@ module.exports = [
   })),
 
   new Rule("border-block-{value}", ({ value }) => ({
-    "border-block-width": Value.parse(value),
+    "border-block-width": Size.parse(value),
   })),
 
   // border x
@@ -1484,8 +1474,8 @@ module.exports = [
   })),
 
   new Rule("border-x-{value}", ({ value }) => ({
-    "border-left-width": Value.parse(value),
-    "border-right-width": Value.parse(value),
+    "border-left-width": Size.parse(value),
+    "border-right-width": Size.parse(value),
   })),
 
   // border y
@@ -1508,8 +1498,8 @@ module.exports = [
   })),
 
   new Rule("border-y-{value}", ({ value }) => ({
-    "border-top-width": Value.parse(value),
-    "border-bottom-width": Value.parse(value),
+    "border-top-width": Size.parse(value),
+    "border-bottom-width": Size.parse(value),
   })),
 
   // border top
@@ -1531,7 +1521,7 @@ module.exports = [
   })),
 
   new Rule("border-t-{value}", ({ value }) => ({
-    "border-top-width": Value.parse(value),
+    "border-top-width": Size.parse(value),
   })),
 
   // border bottom
@@ -1553,7 +1543,7 @@ module.exports = [
   })),
 
   new Rule("border-b-{value}", ({ value }) => ({
-    "border-bottom-width": Value.parse(value),
+    "border-bottom-width": Size.parse(value),
   })),
 
   // border left
@@ -1575,7 +1565,7 @@ module.exports = [
   })),
 
   new Rule("border-l-{value}", ({ value }) => ({
-    "border-left-width": Value.parse(value),
+    "border-left-width": Size.parse(value),
   })),
 
   // border right
@@ -1597,7 +1587,7 @@ module.exports = [
   })),
 
   new Rule("border-r-{value}", ({ value }) => ({
-    "border-right-width": Value.parse(value),
+    "border-right-width": Size.parse(value),
   })),
 
   // border
@@ -1619,7 +1609,7 @@ module.exports = [
   })),
 
   new Rule("border-{value}", ({ value }) => ({
-    "border-width": Value.parse(value),
+    "border-width": Size.parse(value),
   })),
 
   // outline style
@@ -1643,13 +1633,13 @@ module.exports = [
   // outline offset
 
   new Rule("outline-offset-{value}", ({ value }) => ({
-    "outline-offset": Value.parse(value),
+    "outline-offset": Size.parse(value),
   })),
 
   // outline width
 
   new Rule("outline-{value}", ({ value }) => ({
-    "outline-width": Value.parse(value),
+    "outline-width": Size.parse(value),
   })),
 
   // box shadow
@@ -1657,7 +1647,7 @@ module.exports = [
   new Rule("box-shadow-{first}", ({ first }) => ({ "box-shadow": first })),
 
   new Rule("box-shadow-{first}-{second}", ({ first, second }) => ({
-    "box-shadow": `${Value.parse(first)} ${Value.parse(
+    "box-shadow": `${Size.parse(first)} ${Size.parse(
       second
     )} var(--paletto-box-shadow-color)`,
   })),
@@ -1665,7 +1655,7 @@ module.exports = [
   new Rule(
     "box-shadow-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      "box-shadow": `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
+      "box-shadow": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
         third
       )} var(--paletto-box-shadow-color)`,
     })
@@ -1674,18 +1664,18 @@ module.exports = [
   new Rule(
     "box-shadow-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      "box-shadow": `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
+      "box-shadow": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
         third
-      )} ${Value.parse(fourth)} var(--paletto-box-shadow-color)`,
+      )} ${Size.parse(fourth)} var(--paletto-box-shadow-color)`,
     })
   ),
 
   new Rule(
     "box-shadow-{first}-{second}-{third}-{fourth}-{fifth}",
     ({ first, second, third, fourth, fifth }) => ({
-      "box-shadow": `${Value.parse(first)} ${Value.parse(second)} ${Value.parse(
+      "box-shadow": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
         third
-      )} ${Value.parse(fourth)} ${Value.parse(
+      )} ${Size.parse(fourth)} ${Size.parse(
         fifth
       )} var(--paletto-box-shadow-color)`,
     })
@@ -1714,7 +1704,7 @@ module.exports = [
   // blur
 
   new Rule("blur-{value}", ({ value }) => ({
-    filter: `blur(${Value.parse(value)})`,
+    filter: `blur(${Size.parse(value)})`,
   })),
 
   // brightness
@@ -1732,7 +1722,7 @@ module.exports = [
   // drop shadow
 
   new Rule("drop-shadow-{first}-{second}", ({ first, second }) => ({
-    filter: `drop-shadow(${Value.parse(first)} ${Value.parse(
+    filter: `drop-shadow(${Size.parse(first)} ${Size.parse(
       second
     )} var(--paletto-drop-shadow-color))`,
   })),
@@ -1740,9 +1730,9 @@ module.exports = [
   new Rule(
     "drop-shadow-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      filter: `drop-shadow(${Value.parse(first)} ${Value.parse(
+      filter: `drop-shadow(${Size.parse(first)} ${Size.parse(
         second
-      )} ${Value.parse(third)} var(--paletto-drop-shadow-color))`,
+      )} ${Size.parse(third)} var(--paletto-drop-shadow-color))`,
     })
   ),
 
@@ -1783,7 +1773,7 @@ module.exports = [
   // backdrop blur
 
   new Rule("backdrop-blur-{value}", ({ value }) => ({
-    "backdrop-filter": `blur(${Value.parse(value)})`,
+    "backdrop-filter": `blur(${Size.parse(value)})`,
   })),
 
   // backdrop brightness
@@ -1801,7 +1791,7 @@ module.exports = [
   // backdrop drop shadow
 
   new Rule("backdrop-drop-shadow-{first}-{second}", ({ first, second }) => ({
-    "backdrop-filter": `drop-shadow(${Value.parse(first)} ${Value.parse(
+    "backdrop-filter": `drop-shadow(${Size.parse(first)} ${Size.parse(
       second
     )} var(--paletto-backdrop-drop-shadow-color))`,
   })),
@@ -1809,9 +1799,9 @@ module.exports = [
   new Rule(
     "backdrop-drop-shadow-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      "backdrop-filter": `drop-shadow(${Value.parse(first)} ${Value.parse(
+      "backdrop-filter": `drop-shadow(${Size.parse(first)} ${Size.parse(
         second
-      )} ${Value.parse(third)} var(--paletto-backdrop-drop-shadow-color))`,
+      )} ${Size.parse(third)} var(--paletto-backdrop-drop-shadow-color))`,
     })
   ),
 
@@ -2043,19 +2033,19 @@ module.exports = [
   // transform origin
 
   new Rule("transform-origin-{first}", ({ first }) => ({
-    "transform-origin": Value.parse(first),
+    "transform-origin": Size.parse(first),
   })),
 
   new Rule("transform-origin-{first}-{second}", ({ first, second }) => ({
-    "transform-origin": `${Value.parse(first)} ${Value.parse(second)}`,
+    "transform-origin": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule(
     "transform-origin-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      "transform-origin": `${Value.parse(first)} ${Value.parse(
+      "transform-origin": `${Size.parse(first)} ${Size.parse(
         second
-      )} ${Value.parse(third)}`,
+      )} ${Size.parse(third)}`,
     })
   ),
 
@@ -2125,38 +2115,38 @@ module.exports = [
   // translate
 
   new Rule("translate-x-{value}", ({ value }) => ({
-    transform: `translateX(${Value.parse(value)})`,
+    transform: `translateX(${Size.parse(value)})`,
   })),
 
   new Rule("translate-y-{value}", ({ value }) => ({
-    transform: `translateY(${Value.parse(value)})`,
+    transform: `translateY(${Size.parse(value)})`,
   })),
 
   new Rule("translate-z-{value}", ({ value }) => ({
-    transform: `translateZ(${Value.parse(value)})`,
+    transform: `translateZ(${Size.parse(value)})`,
   })),
 
   new Rule(
     "translate-3d-{first}-{second}-{third}",
     ({ first, second, third }) => ({
-      transform: `translate3d(${Value.parse(first)}, ${Value.parse(
+      transform: `translate3d(${Size.parse(first)}, ${Size.parse(
         second
-      )}, ${Value.parse(third)})`,
+      )}, ${Size.parse(third)})`,
     })
   ),
 
   new Rule("translate-{first}", ({ first }) => ({
-    transform: `translate(${Value.parse(first)})`,
+    transform: `translate(${Size.parse(first)})`,
   })),
 
   new Rule("translate-{first}-{second}", ({ first, second }) => ({
-    transform: `translate(${Value.parse(first)}, ${Value.parse(second)})`,
+    transform: `translate(${Size.parse(first)}, ${Size.parse(second)})`,
   })),
 
   // perspective
 
   new Rule("perspective-{value}", ({ value }) => ({
-    transform: `perspective(${Value.parse(value)})`,
+    transform: `perspective(${Size.parse(value)})`,
   })),
 
   // skew
@@ -2220,175 +2210,175 @@ module.exports = [
   // scroll margin inline
 
   new Rule("scroll-m-inline-s-{value}", ({ value }) => ({
-    "scroll-margin-inline-start": Value.parse(value),
+    "scroll-margin-inline-start": Size.parse(value),
   })),
 
   new Rule("scroll-m-inline-e-{value}", ({ value }) => ({
-    "scroll-margin-inline-end": Value.parse(value),
+    "scroll-margin-inline-end": Size.parse(value),
   })),
 
   new Rule("scroll-m-inline-{first}", ({ first }) => ({
-    "scroll-margin-inline": Value.parse(first),
+    "scroll-margin-inline": Size.parse(first),
   })),
 
   new Rule("scroll-m-inline-{first}-{second}", ({ first, second }) => ({
-    "scroll-margin-inline": `${Value.parse(first)} ${Value.parse(second)}`,
+    "scroll-margin-inline": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // scroll margin block
 
   new Rule("scroll-m-block-s-{value}", ({ value }) => ({
-    "scroll-margin-block-start": Value.parse(value),
+    "scroll-margin-block-start": Size.parse(value),
   })),
 
   new Rule("scroll-m-block-e-{value}", ({ value }) => ({
-    "scroll-margin-block-end": Value.parse(value),
+    "scroll-margin-block-end": Size.parse(value),
   })),
 
   new Rule("scroll-m-block-{first}", ({ first }) => ({
-    "scroll-margin-block": Value.parse(first),
+    "scroll-margin-block": Size.parse(first),
   })),
 
   new Rule("scroll-m-block-{first}-{second}", ({ first, second }) => ({
-    "scroll-margin-block": `${Value.parse(first)} ${Value.parse(second)}`,
+    "scroll-margin-block": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // scroll margin
 
   new Rule("scroll-m-{first}", ({ first }) => ({
-    "scroll-margin": Value.parse(first),
+    "scroll-margin": Size.parse(first),
   })),
 
   new Rule("scroll-m-{first}-{second}", ({ first, second }) => ({
-    "scroll-margin": `${Value.parse(first)} ${Value.parse(second)}`,
+    "scroll-margin": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("scroll-m-{first}-{second}-{third}", ({ first, second, third }) => ({
-    "scroll-margin": `${Value.parse(first)} ${Value.parse(
-      second
-    )} ${Value.parse(third)}`,
+    "scroll-margin": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
+      third
+    )}`,
   })),
 
   new Rule(
     "scroll-m-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      "scroll-margin": `${Value.parse(first)} ${Value.parse(
-        second
-      )} ${Value.parse(third)} ${Value.parse(fourth)}`,
+      "scroll-margin": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
+        third
+      )} ${Size.parse(fourth)}`,
     })
   ),
 
   new Rule("scroll-mt-{value}", ({ value }) => ({
-    "scroll-margin-top": Value.parse(value),
+    "scroll-margin-top": Size.parse(value),
   })),
 
   new Rule("scroll-mb-{value}", ({ value }) => ({
-    "scroll-margin-bottom": Value.parse(value),
+    "scroll-margin-bottom": Size.parse(value),
   })),
 
   new Rule("scroll-ml-{value}", ({ value }) => ({
-    "scroll-margin-left": Value.parse(value),
+    "scroll-margin-left": Size.parse(value),
   })),
 
   new Rule("scroll-mr-{value}", ({ value }) => ({
-    "scroll-margin-right": Value.parse(value),
+    "scroll-margin-right": Size.parse(value),
   })),
 
   new Rule("scroll-mx-{value}", ({ value }) => ({
-    "scroll-margin-left": Value.parse(value),
-    "scroll-margin-right": Value.parse(value),
+    "scroll-margin-left": Size.parse(value),
+    "scroll-margin-right": Size.parse(value),
   })),
 
   new Rule("scroll-my-{value}", ({ value }) => ({
-    "scroll-margin-top": Value.parse(value),
-    "scroll-margin-bottom": Value.parse(value),
+    "scroll-margin-top": Size.parse(value),
+    "scroll-margin-bottom": Size.parse(value),
   })),
 
   // scroll padding inline
 
   new Rule("scroll-p-inline-s-{value}", ({ value }) => ({
-    "scroll-padding-inline-start": Value.parse(value),
+    "scroll-padding-inline-start": Size.parse(value),
   })),
 
   new Rule("scroll-p-inline-e-{value}", ({ value }) => ({
-    "scroll-padding-inline-end": Value.parse(value),
+    "scroll-padding-inline-end": Size.parse(value),
   })),
 
   new Rule("scroll-p-inline-{first}", ({ first }) => ({
-    "scroll-padding-inline": Value.parse(first),
+    "scroll-padding-inline": Size.parse(first),
   })),
 
   new Rule("scroll-p-inline-{first}-{second}", ({ first, second }) => ({
-    "scroll-padding-inline": `${Value.parse(first)} ${Value.parse(second)}`,
+    "scroll-padding-inline": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // scroll padding block
 
   new Rule("scroll-p-block-s-{value}", ({ value }) => ({
-    "scroll-padding-block-start": Value.parse(value),
+    "scroll-padding-block-start": Size.parse(value),
   })),
 
   new Rule("scroll-p-block-e-{value}", ({ value }) => ({
-    "scroll-padding-block-end": Value.parse(value),
+    "scroll-padding-block-end": Size.parse(value),
   })),
 
   new Rule("scroll-p-block-{first}", ({ first }) => ({
-    "scroll-padding-block": Value.parse(first),
+    "scroll-padding-block": Size.parse(first),
   })),
 
   new Rule("scroll-p-block-{first}-{second}", ({ first, second }) => ({
-    "scroll-padding-block": `${Value.parse(first)} ${Value.parse(second)}`,
+    "scroll-padding-block": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   // scroll padding
 
   new Rule("scroll-p-{first}", ({ first }) => ({
-    "scroll-padding": Value.parse(first),
+    "scroll-padding": Size.parse(first),
   })),
 
   new Rule("scroll-p-{first}-{second}", ({ first, second }) => ({
-    "scroll-padding": `${Value.parse(first)} ${Value.parse(second)}`,
+    "scroll-padding": `${Size.parse(first)} ${Size.parse(second)}`,
   })),
 
   new Rule("scroll-p-{first}-{second}-{third}", ({ first, second, third }) => ({
-    "scroll-padding": `${Value.parse(first)} ${Value.parse(
-      second
-    )} ${Value.parse(third)}`,
+    "scroll-padding": `${Size.parse(first)} ${Size.parse(second)} ${Size.parse(
+      third
+    )}`,
   })),
 
   new Rule(
     "scroll-p-{first}-{second}-{third}-{fourth}",
     ({ first, second, third, fourth }) => ({
-      "scroll-padding": `${Value.parse(first)} ${Value.parse(
+      "scroll-padding": `${Size.parse(first)} ${Size.parse(
         second
-      )} ${Value.parse(third)} ${Value.parse(fourth)}`,
+      )} ${Size.parse(third)} ${Size.parse(fourth)}`,
     })
   ),
 
   new Rule("scroll-pt-{value}", ({ value }) => ({
-    "scroll-padding-top": Value.parse(value),
+    "scroll-padding-top": Size.parse(value),
   })),
 
   new Rule("scroll-pb-{value}", ({ value }) => ({
-    "scroll-padding-bottom": Value.parse(value),
+    "scroll-padding-bottom": Size.parse(value),
   })),
 
   new Rule("scroll-pl-{value}", ({ value }) => ({
-    "scroll-padding-left": Value.parse(value),
+    "scroll-padding-left": Size.parse(value),
   })),
 
   new Rule("scroll-pr-{value}", ({ value }) => ({
-    "scroll-padding-right": Value.parse(value),
+    "scroll-padding-right": Size.parse(value),
   })),
 
   new Rule("scroll-px-{value}", ({ value }) => ({
-    "scroll-padding-left": Value.parse(value),
-    "scroll-padding-right": Value.parse(value),
+    "scroll-padding-left": Size.parse(value),
+    "scroll-padding-right": Size.parse(value),
   })),
 
   new Rule("scroll-py-{value}", ({ value }) => ({
-    "scroll-padding-top": Value.parse(value),
-    "scroll-padding-bottom": Value.parse(value),
+    "scroll-padding-top": Size.parse(value),
+    "scroll-padding-bottom": Size.parse(value),
   })),
 
   // scroll snap align

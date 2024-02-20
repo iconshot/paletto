@@ -4,7 +4,7 @@ const Element = require("./src/Element");
 const Media = require("./src/Media");
 const PseudoClass = require("./src/PseudoClass");
 const Rule = require("./src/Rule");
-const Value = require("./src/Value");
+const Size = require("./src/Size");
 
 module.exports = {
   Animation,
@@ -13,5 +13,5 @@ module.exports = {
   Media,
   PseudoClass,
   Rule,
-  Value,
+  Size,
 };
