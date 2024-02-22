@@ -20,7 +20,7 @@ async function bundle() {
 
   await bundler.bundle(palettoConfig);
 
-  console.log("\x1b[36mPaletto: Bundled.");
+  console.log("\x1b[36mPaletto: Bundled.\x1b[0m");
 }
 
 async function run() {
