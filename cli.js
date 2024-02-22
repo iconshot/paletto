@@ -14,7 +14,7 @@ function requireUncached(module) {
 }
 
 async function bundle() {
-  console.log("\x1b[0mPaletto: Bundling CSS...");
+  console.log("Paletto: Bundling CSS...");
 
   const palettoConfig = requireUncached(path.resolve("./paletto.config"));
 
