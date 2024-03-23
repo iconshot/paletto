@@ -1,5 +1,6 @@
+const Color = require("@paletto/color");
+
 const Animation = require("./src/Animation");
-const Color = require("./src/Color");
 const Element = require("./src/Element");
 const Media = require("./src/Media");
 const PseudoClass = require("./src/PseudoClass");

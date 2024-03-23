@@ -1,5 +1,6 @@
+const Color = require("@paletto/color");
+
 const Animation = require("./Animation");
-const Color = require("./Color");
 const Media = require("./Media");
 const Rule = require("./Rule");
 

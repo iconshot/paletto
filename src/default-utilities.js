@@ -362,30 +362,37 @@ module.exports = [
 
   // display
 
-  new Rule("hidden", { display: "none" }),
-
   ...[
     "block",
     "inline",
-    "inline-block",
-    "flex",
-    "inline-flex",
-    "table",
-    "inline-table",
-    "table-caption",
-    "table-cell",
-    "table-column",
-    "table-column-group",
-    "table-footer-group",
-    "table-header-group",
-    "table-row-group",
-    "table-wor",
+    "run-in",
+    "flow",
     "flow-root",
+    "table",
+    "flex",
     "grid",
-    "inline-grid",
-    "contents",
+    "ruby",
     "list-item",
+    "table-row-group",
+    "table-header-group",
+    "table-footer-group",
+    "table-row",
+    "table-cell",
+    "table-column-group",
+    "table-column",
+    "table-caption",
+    "ruby-base",
+    "ruby-text",
+    "ruby-base-container",
+    "ruby-text-container",
+    "contents",
+    "inline-block",
+    "inline-table",
+    "inline-flex",
+    "inline-grid",
   ].map((value) => new Rule(value, { display: value })),
+
+  new Rule("hidden", { display: "none" }),
 
   new Rule("display-{first}", ({ first }) => ({ display: first })),
 
@@ -1102,36 +1109,76 @@ module.exports = [
   ...createUtilities(
     [
       [
-        "bg-gradient-to-t",
+        "bg-gradient-linear",
+        "linear-gradient(var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-linear-t",
         "linear-gradient(to top, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-tr",
+        "bg-gradient-linear-tr",
         "linear-gradient(to top right, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-tl",
+        "bg-gradient-linear-tl",
         "linear-gradient(to top left, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-b",
+        "bg-gradient-linear-b",
         "linear-gradient(to bottom, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-br",
+        "bg-gradient-linear-br",
         "linear-gradient(to bottom right, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-bl",
+        "bg-gradient-linear-bl",
         "linear-gradient(to bottom left, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-r",
+        "bg-gradient-linear-r",
         "linear-gradient(to right, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
       [
-        "bg-gradient-to-l",
+        "bg-gradient-linear-l",
         "linear-gradient(to left, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial",
+        "radial-gradient(var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-t",
+        "radial-gradient(circle at top, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-tr",
+        "radial-gradient(circle at top right, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-tl",
+        "radial-gradient(circle at top left, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-b",
+        "radial-gradient(circle at bottom, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-br",
+        "radial-gradient(circle at bottom right, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-bl",
+        "radial-gradient(circle at bottom left, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-r",
+        "radial-gradient(circle at right, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
+      ],
+      [
+        "bg-gradient-radial-l",
+        "radial-gradient(circle at left, var(--paletto-gradient-from-color), var(--paletto-gradient-to-color))",
       ],
     ],
     "background-image"
