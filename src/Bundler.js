@@ -157,7 +157,7 @@ class Bundler {
         element.getProperties();
 
       if (tmpApply === null) {
-        if (Object.keys(tmpProperties).length === 0) {
+        if (this.isEmptyObject(tmpProperties)) {
           continue;
         }
 
@@ -263,6 +263,10 @@ class Bundler {
           {}
         );
 
+        if (this.isEmptyObject(properties)) {
+          continue;
+        }
+
         const finalTarget = new Target(selector, properties, media);
 
         this.targets.push(finalTarget);
@@ -320,7 +324,7 @@ class Bundler {
 
       const { "@apply": apply = null, ...properties } = tmpProperties;
 
-      if (Object.keys(properties).length === 0) {
+      if (this.isEmptyObject(properties)) {
         continue;
       }
 
@@ -612,6 +616,10 @@ class Bundler {
     }
 
     return blocks;
+  }
+
+  isEmptyObject(object) {
+    return Object.keys(object).length === 0;
   }
 }
 
