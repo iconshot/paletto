@@ -104,15 +104,15 @@ class Bundler {
   }
 
   splitModifiers(string) {
-    const preffixRegex = /^([^a-z0-9\[\]])?(.+)/;
+    const prefixRegex = /^([^a-z0-9\[\]])?(.+)/;
 
-    const match = string.match(preffixRegex);
+    const match = string.match(prefixRegex);
 
     if (match === null) {
       return null;
     }
 
-    const [preffix = null, tmpString] = match.slice(1);
+    const [prefix = null, tmpString] = match.slice(1);
 
     const splitRegex = /(?<!\[[^\[\]]*):/;
 
@@ -142,7 +142,7 @@ class Bundler {
       }
     }
 
-    return [preffix, modifiers, className];
+    return [prefix, modifiers, className];
   }
 
   // create targets from elements
@@ -179,9 +179,9 @@ class Bundler {
           continue;
         }
 
-        const [preffix, modifiers, className] = tmpModifiers;
+        const [prefix, modifiers, className] = tmpModifiers;
 
-        if (preffix !== null && preffix !== "!") {
+        if (prefix !== null && prefix !== "!") {
           continue;
         }
 
@@ -207,7 +207,7 @@ class Bundler {
 
         const media = this.filterMediaQueries(modifiers);
 
-        if (preffix === "!") {
+        if (prefix === "!") {
           for (const key in properties) {
             properties[key] = `${properties[key]}!important`;
           }
@@ -306,9 +306,9 @@ class Bundler {
         continue;
       }
 
-      const [preffix, modifiers, className] = tmpModifiers;
+      const [prefix, modifiers, className] = tmpModifiers;
 
-      if (preffix !== null && preffix !== "!") {
+      if (prefix !== null && prefix !== "!") {
         continue;
       }
 
@@ -334,7 +334,7 @@ class Bundler {
 
       const media = this.filterMediaQueries(modifiers);
 
-      if (preffix === "!") {
+      if (prefix === "!") {
         for (const key in properties) {
           properties[key] = `${properties[key]}!important`;
         }
@@ -372,7 +372,7 @@ class Bundler {
             continue;
           }
 
-          const [innerPreffix, innerModifiers, innerClass] = innerTmpModifiers;
+          const [innerPrefix, innerModifiers, innerClass] = innerTmpModifiers;
 
           let innerSelector = `.${this.escapeClass(innerClass)}`;
 
@@ -387,7 +387,7 @@ class Bundler {
           }
 
           selector = `${innerSelector}${
-            innerPreffix === null ? " " : ` ${innerPreffix} `
+            innerPrefix === null ? " " : ` ${innerPrefix} `
           }${selector}`;
         }
       } else {
