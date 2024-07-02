@@ -106,11 +106,35 @@ module.exports = (bundler) => {
       };
 
       const rules = [
-        new Rule(`${key}-{first}`, ({ first }) => createObject(first)),
+        new Rule(`${key}-{first}`, ({ first }) => {
+          const { colors } = bundler.getConfig();
+
+          if (first in colors) {
+            const color = colors[first];
+
+            if (typeof color === "string") {
+              return createObject(color);
+            }
+
+            if (color instanceof Color) {
+              const [r, g, b] = color.rgb(100);
+
+              return createObject(`rgb(${r} ${g} ${b})`);
+            }
+          }
+
+          return createObject(first);
+        }),
         new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
           const { colors } = bundler.getConfig();
 
           if (!(first in colors)) {
+            return {};
+          }
+
+          const color = colors[first];
+
+          if (!(color instanceof Color)) {
             return {};
           }
 
@@ -119,8 +143,6 @@ module.exports = (bundler) => {
           }
 
           const value = parseInt(second);
-
-          const color = colors[first];
 
           const [r, g, b] = color.rgb(value);
 
@@ -135,13 +157,17 @@ module.exports = (bundler) => {
               return {};
             }
 
+            const color = colors[first];
+
+            if (!(color instanceof Color)) {
+              return {};
+            }
+
             if (isNaN(second)) {
               return {};
             }
 
             const value = parseInt(second);
-
-            const color = colors[first];
 
             const [r, g, b] = color.rgb(value);
 
