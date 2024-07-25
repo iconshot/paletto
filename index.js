@@ -1,4 +1,4 @@
-const Color = require("@paletto/color");
+const { Color } = require("@paletto/color");
 
 const Animation = require("./src/Animation");
 const Element = require("./src/Element");
