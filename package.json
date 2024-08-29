@@ -1,6 +1,6 @@
 {
   "name": "paletto",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "On-demand systematic CSS framework.",
   "homepage": "https://paletto.dev",
   "repository": {
@@ -17,6 +17,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@paletto/color": "^1.1.3"
+    "@paletto/color": "^1.1.4"
   }
 }
