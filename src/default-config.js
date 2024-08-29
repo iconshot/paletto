@@ -109,21 +109,23 @@ module.exports = (bundler) => {
         new Rule(`${key}-{first}`, ({ first }) => {
           const { colors } = bundler.getConfig();
 
-          if (first in colors) {
-            const color = colors[first];
-
-            if (typeof color === "string") {
-              return createObject(color);
-            }
-
-            if (color instanceof Color) {
-              const [r, g, b] = color.rgb(100);
-
-              return createObject(`rgb(${r} ${g} ${b})`);
-            }
+          if (!(first in colors)) {
+            return createObject(first);
           }
 
-          return createObject(first);
+          const color = colors[first];
+
+          if (typeof color === "string") {
+            return createObject(color);
+          }
+
+          if (color instanceof Color) {
+            const [r, g, b] = color.rgb(100);
+
+            return createObject(`rgb(${r} ${g} ${b})`);
+          }
+
+          return {};
         }),
         new Rule(`${key}-{first}-{second}`, ({ first, second }) => {
           const { colors } = bundler.getConfig();
@@ -142,11 +144,15 @@ module.exports = (bundler) => {
             return {};
           }
 
-          const value = parseInt(second);
+          try {
+            const value = parseInt(second);
 
-          const [r, g, b] = color.rgb(value);
+            const [r, g, b] = color.rgb(value);
 
-          return createObject(`rgb(${r} ${g} ${b})`);
+            return createObject(`rgb(${r} ${g} ${b})`);
+          } catch (error) {
+            return {};
+          }
         }),
         new Rule(
           `${key}-{first}-{second}-{third}`,
@@ -167,11 +173,15 @@ module.exports = (bundler) => {
               return {};
             }
 
-            const value = parseInt(second);
+            try {
+              const value = parseInt(second);
 
-            const [r, g, b] = color.rgb(value);
+              const [r, g, b] = color.rgb(value);
 
-            return createObject(`rgb(${r} ${g} ${b} / ${third})`);
+              return createObject(`rgb(${r} ${g} ${b} / ${third})`);
+            } catch (error) {
+              return {};
+            }
           }
         ),
       ];
