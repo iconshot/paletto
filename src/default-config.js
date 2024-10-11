@@ -11,7 +11,7 @@ module.exports = (bundler) => {
     src: ["./src"],
     file: "./src/output.css",
     extensions: ["js", "html"],
-    colors: { blank: Color.blank },
+    colors: { blank: new Color(0, 0) },
     elements: [],
     components: [
       new Rule("container", {
